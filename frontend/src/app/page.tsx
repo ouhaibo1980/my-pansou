@@ -19,18 +19,13 @@ export default function Home() {
   const [searching, setSearching] = useState(false);
   const [results, setResults] = useState<GroupedResults>({});
   const [error, setError] = useState('');
-  const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set());
+  const [selectedType, setSelectedType] = useState<string>('all');
 
-  const toggleType = (typeName: string) => {
-    setExpandedTypes((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(typeName)) {
-        newSet.delete(typeName);
-      } else {
-        newSet.add(typeName);
-      }
-      return newSet;
-    });
+  const getFilteredResults = () => {
+    if (selectedType === 'all') {
+      return results;
+    }
+    return { [selectedType]: results[selectedType] };
   };
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -80,8 +75,8 @@ export default function Home() {
 
         setResults(groupedResults);
 
-        // 默认展开所有类型
-        setExpandedTypes(new Set(Object.keys(groupedResults)));
+        // 默认选中"全部"
+        setSelectedType('all');
       } else {
         setError('未找到相关结果');
       }
@@ -114,36 +109,6 @@ export default function Home() {
       }
     } catch {
       return datetime.split('T')[0] || datetime;
-    }
-  };
-
-  const getPanTypeIcon = (type: string) => {
-    switch (type) {
-      case '百度': return '百度';
-      case '阿里云': return '阿里云';
-      case '夸克': return '夸克';
-      case '天翼': return '天翼';
-      case 'UC': return 'UC';
-      case '115': return '115';
-      case 'PikPak': return 'PikPak';
-      case '迅雷': return '迅雷';
-      case '磁力': return '磁力';
-      default: return type || '其他';
-    }
-  };
-
-  const getPanTypeColor = (type: string) => {
-    switch (type) {
-      case '百度': return 'bg-blue-500';
-      case '阿里云': return 'bg-orange-500';
-      case '夸克': return 'bg-purple-500';
-      case '天翼': return 'bg-cyan-500';
-      case 'UC': return 'bg-yellow-500';
-      case '115': return 'bg-green-500';
-      case 'PikPak': return 'bg-pink-500';
-      case '迅雷': return 'bg-red-500';
-      case '磁力': return 'bg-purple-600';
-      default: return 'bg-gray-500';
     }
   };
 
@@ -205,17 +170,42 @@ export default function Home() {
               <span className="text-purple-300 text-sm">关键词: {keyword}</span>
             </div>
 
-            <div className="space-y-6">
-              {Object.entries(results).map(([typeName, typeResults]) => (
-                <ResultGroup
-                  key={typeName}
-                  typeName={typeName}
-                  results={typeResults}
-                  expanded={expandedTypes.has(typeName)}
-                  onToggle={() => toggleType(typeName)}
-                  getPanTypeColor={getPanTypeColor}
-                />
-              ))}
+            {/* Horizontal Type Tabs */}
+            <div className="mb-6 overflow-x-auto">
+              <div className="flex gap-2 pb-2">
+                <button
+                  onClick={() => setSelectedType('all')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                    selectedType === 'all'
+                      ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
+                      : 'bg-white/10 text-purple-300 hover:bg-white/20'
+                  }`}
+                >
+                  全部 ({getTotalResultCount()})
+                </button>
+                {Object.entries(results).map(([typeName, typeResults]) => (
+                  <button
+                    key={typeName}
+                    onClick={() => setSelectedType(typeName)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                      selectedType === typeName
+                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
+                        : 'bg-white/10 text-purple-300 hover:bg-white/20'
+                    }`}
+                  >
+                    {typeName} ({typeResults.length})
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Result List */}
+            <div className="space-y-3">
+              {Object.entries(getFilteredResults()).map(([typeName, typeResults]) =>
+                typeResults.map((result, index) => (
+                  <ResultItem key={`${typeName}-${index}`} result={result} />
+                ))
+              )}
             </div>
           </div>
         )}
@@ -229,54 +219,6 @@ export default function Home() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function ResultGroup({
-  typeName,
-  results,
-  expanded,
-  onToggle,
-  getPanTypeColor,
-}: {
-  typeName: string;
-  results: SearchResult[];
-  expanded: boolean;
-  onToggle: () => void;
-  getPanTypeColor: (type: string) => string;
-}) {
-  return (
-    <div className="bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
-      {/* Group Header */}
-      <button
-        onClick={onToggle}
-        className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <div className={`px-3 py-1.5 rounded-lg text-white text-sm font-medium ${getPanTypeColor(typeName)}`}>
-            {typeName}
-          </div>
-          <span className="text-purple-300 text-sm">{results.length} 条结果</span>
-        </div>
-        <svg
-          className={`w-5 h-5 text-purple-300 transition-transform ${expanded ? 'rotate-180' : ''}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {/* Group Content */}
-      {expanded && (
-        <div className="border-t border-white/10 divide-y divide-white/10">
-          {results.map((result, index) => (
-            <ResultItem key={index} result={result} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -295,7 +237,7 @@ function ResultItem({ result }: { result: SearchResult }) {
   };
 
   return (
-    <div className="p-4 hover:bg-white/5 transition-colors">
+    <div className="p-4 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 hover:bg-white/10 transition-all hover:border-purple-500/50">
       <div className="flex items-start gap-4">
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-semibold text-white mb-2 hover:text-purple-400 transition-colors line-clamp-2">
