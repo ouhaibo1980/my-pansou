@@ -38,10 +38,10 @@ fi
 
 echo "✅ PanSou API started on port 8888 (PID: $BACKEND_PID)" >&2
 
-# 启动前端服务
+# 启动前端服务（前台运行，阻塞脚本退出）
 echo "Starting frontend on port 5000..." >&2
 cd frontend
-nohup node node_modules/next/dist/bin/next start -p 5000 > /tmp/frontend.log 2>&1 &
+node node_modules/next/dist/bin/next start -p 5000 > /tmp/frontend.log 2>&1 &
 FRONTEND_PID=$!
 cd ..
 
@@ -53,12 +53,18 @@ for i in {1..12}; do
     echo "🚀 All services started successfully!" >&2
     echo "   Frontend: http://localhost:5000" >&2
     echo "   API: http://localhost:8888/api" >&2
-    exit 0
+    break
   fi
   echo "Waiting... ($i/12)" >&2
   sleep 1
 done
 
-echo "ERROR: Failed to start frontend within 12 seconds" >&2
-tail -30 /tmp/frontend.log >&2
-exit 1
+if ! ss -tuln 2>/dev/null | grep -q 'LISTEN.*:5000'; then
+  echo "ERROR: Failed to start frontend within 12 seconds" >&2
+  tail -30 /tmp/frontend.log >&2
+  exit 1
+fi
+
+# 阻塞等待前端进程，保持脚本运行
+echo "✅ Service is running. Press Ctrl+C to stop." >&2
+wait $FRONTEND_PID
