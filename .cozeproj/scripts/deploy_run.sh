@@ -7,6 +7,9 @@ export ENV=production
 export PORT=8888
 export GOPROXY=https://goproxy.cn,direct
 
+# 启用所有搜索源插件（77个）
+export ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj"
+
 # 停止现有进程
 pids=$(ss -lptn 'sport = :5000' 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2)
 [ -n "$pids" ] && kill -9 $pids 2>/dev/null
