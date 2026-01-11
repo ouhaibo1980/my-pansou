@@ -29,8 +29,38 @@ export default function Home() {
       const response = await fetch(`http://localhost:8888/api/search?keyword=${encodeURIComponent(keyword)}`);
       const data = await response.json();
 
-      if (data.code === 0 && data.data.results) {
-        setResults(data.data.results);
+      if (data.code === 0 && data.data.merged_by_type) {
+        // 将后端返回的 merged_by_type 结构转换为前端需要的 results 数组
+        const convertedResults: SearchResult[] = [];
+        const typeMapping: { [key: string]: string } = {
+          'xunlei': '迅雷',
+          'uc': 'UC',
+          'baidu': '百度',
+          'quark': '夸克',
+          'aliyun': '阿里云',
+          'tianyi': '天翼',
+          '115': '115',
+          'pikpak': 'PikPak',
+          'magnet': '磁力'
+        };
+
+        // 遍历所有类型
+        for (const [type, items] of Object.entries(data.data.merged_by_type)) {
+          if (Array.isArray(items)) {
+            // 为每个结果添加类型信息
+            items.forEach((item: any) => {
+              convertedResults.push({
+                title: item.note || item.title || '未命名资源',
+                url: item.url,
+                time: formatTime(item.datetime),
+                type: typeMapping[type] || type,
+                size: item.size
+              });
+            });
+          }
+        }
+
+        setResults(convertedResults);
       } else {
         setError('未找到相关结果');
       }
@@ -42,29 +72,56 @@ export default function Home() {
     }
   };
 
+  const formatTime = (datetime: string): string => {
+    if (!datetime || datetime === '0001-01-01T00:00:00Z') {
+      return '未知时间';
+    }
+    try {
+      const date = new Date(datetime);
+      const now = new Date();
+      const diff = now.getTime() - date.getTime();
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+      if (days === 0) {
+        return '今天';
+      } else if (days === 1) {
+        return '昨天';
+      } else if (days < 7) {
+        return `${days}天前`;
+      } else {
+        return date.toLocaleDateString('zh-CN');
+      }
+    } catch {
+      return datetime.split('T')[0] || datetime;
+    }
+  };
+
   const getPanTypeIcon = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'baidu': return '百度';
-      case 'aliyun': return '阿里云';
-      case 'quark': return '夸克';
-      case 'tianyi': return '天翼';
-      case 'uc': return 'UC';
+    switch (type) {
+      case '百度': return '百度';
+      case '阿里云': return '阿里云';
+      case '夸克': return '夸克';
+      case '天翼': return '天翼';
+      case 'UC': return 'UC';
       case '115': return '115';
-      case 'pikpak': return 'PikPak';
-      case 'magnet': return '磁力';
+      case 'PikPak': return 'PikPak';
+      case '迅雷': return '迅雷';
+      case '磁力': return '磁力';
       default: return type || '其他';
     }
   };
 
   const getPanTypeColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'baidu': return 'bg-blue-500';
-      case 'aliyun': return 'bg-orange-500';
-      case 'quark': return 'bg-purple-500';
-      case 'tianyi': return 'bg-cyan-500';
-      case 'uc': return 'bg-yellow-500';
+    switch (type) {
+      case '百度': return 'bg-blue-500';
+      case '阿里云': return 'bg-orange-500';
+      case '夸克': return 'bg-purple-500';
+      case '天翼': return 'bg-cyan-500';
+      case 'UC': return 'bg-yellow-500';
       case '115': return 'bg-green-500';
-      case 'magnet': return 'bg-pink-500';
+      case 'PikPak': return 'bg-pink-500';
+      case '迅雷': return 'bg-red-500';
+      case '磁力': return 'bg-purple-600';
       default: return 'bg-gray-500';
     }
   };
