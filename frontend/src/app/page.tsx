@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Globe } from 'lucide-react';
+import { Search, Globe, Download, Clock } from 'lucide-react';
 
 interface SearchResult {
   title: string;
