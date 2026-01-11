@@ -170,6 +170,11 @@ export default function Home() {
               <span className="text-purple-300 text-sm">关键词: {keyword}</span>
             </div>
 
+            {/* Search Info */}
+            <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl text-blue-200 text-sm">
+              <p>💡 提示：当前搜索"<strong>{keyword}</strong>"，找到 {getTotalResultCount()} 条结果</p>
+            </div>
+
             {/* Horizontal Type Tabs */}
             <div className="mb-6 overflow-x-auto">
               <div className="flex gap-2 pb-2">
