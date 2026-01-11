@@ -26,7 +26,8 @@ export default function Home() {
     setResults([]);
 
     try {
-      const response = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://my79h7pf6d.coze.site';
+      const response = await fetch(`${apiUrl}/api/search?keyword=${encodeURIComponent(keyword)}`);
       const data = await response.json();
 
       if (data.code === 0 && data.data.merged_by_type) {
