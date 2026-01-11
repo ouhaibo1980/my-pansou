@@ -7,15 +7,31 @@ interface SearchResult {
   title: string;
   url: string;
   time: string;
-  type: string;
   size?: string;
+}
+
+interface GroupedResults {
+  [typeName: string]: SearchResult[];
 }
 
 export default function Home() {
   const [keyword, setKeyword] = useState('');
   const [searching, setSearching] = useState(false);
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<GroupedResults>({});
   const [error, setError] = useState('');
+  const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set());
+
+  const toggleType = (typeName: string) => {
+    setExpandedTypes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(typeName)) {
+        newSet.delete(typeName);
+      } else {
+        newSet.add(typeName);
+      }
+      return newSet;
+    });
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,16 +39,20 @@ export default function Home() {
 
     setSearching(true);
     setError('');
-    setResults([]);
+    setResults({});
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://my79h7pf6d.coze.site';
-      const response = await fetch(`${apiUrl}/api/search?keyword=${encodeURIComponent(keyword)}`);
+      const response = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
 
       if (data.code === 0 && data.data.merged_by_type) {
-        // 将后端返回的 merged_by_type 结构转换为前端需要的 results 数组
-        const convertedResults: SearchResult[] = [];
+        // 将后端返回的 merged_by_type 结构转换为按类型分组的结果
+        const groupedResults: GroupedResults = {};
         const typeMapping: { [key: string]: string } = {
           'xunlei': '迅雷',
           'uc': 'UC',
@@ -45,29 +65,29 @@ export default function Home() {
           'magnet': '磁力'
         };
 
-        // 遍历所有类型
+        // 遍历所有类型，分组存储
         for (const [type, items] of Object.entries(data.data.merged_by_type)) {
-          if (Array.isArray(items)) {
-            // 为每个结果添加类型信息
-            items.forEach((item: any) => {
-              convertedResults.push({
-                title: item.note || item.title || '未命名资源',
-                url: item.url,
-                time: formatTime(item.datetime),
-                type: typeMapping[type] || type,
-                size: item.size
-              });
-            });
+          if (Array.isArray(items) && items.length > 0) {
+            const typeName = typeMapping[type] || type;
+            groupedResults[typeName] = items.map((item: any) => ({
+              title: item.note || item.title || '未命名资源',
+              url: item.url,
+              time: formatTime(item.datetime),
+              size: item.size
+            }));
           }
         }
 
-        setResults(convertedResults);
+        setResults(groupedResults);
+
+        // 默认展开所有类型
+        setExpandedTypes(new Set(Object.keys(groupedResults)));
       } else {
         setError('未找到相关结果');
       }
     } catch (err) {
       console.error('Search error:', err);
-      setError('搜索失败，请稍后重试');
+      setError(`搜索失败: ${err instanceof Error ? err.message : '未知错误'}`);
     } finally {
       setSearching(false);
     }
@@ -127,6 +147,10 @@ export default function Home() {
     }
   };
 
+  const getTotalResultCount = () => {
+    return Object.values(results).reduce((total, items) => total + items.length, 0);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-8">
@@ -172,21 +196,23 @@ export default function Home() {
         )}
 
         {/* Search Results */}
-        {results.length > 0 && (
+        {Object.keys(results).length > 0 && (
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">
-                搜索结果 <span className="text-purple-400">({results.length})</span>
+                搜索结果 <span className="text-purple-400">({getTotalResultCount()})</span>
               </h2>
               <span className="text-purple-300 text-sm">关键词: {keyword}</span>
             </div>
 
-            <div className="space-y-4">
-              {results.map((result, index) => (
-                <ResultCard
-                  key={index}
-                  result={result}
-                  getPanTypeIcon={getPanTypeIcon}
+            <div className="space-y-6">
+              {Object.entries(results).map(([typeName, typeResults]) => (
+                <ResultGroup
+                  key={typeName}
+                  typeName={typeName}
+                  results={typeResults}
+                  expanded={expandedTypes.has(typeName)}
+                  onToggle={() => toggleType(typeName)}
                   getPanTypeColor={getPanTypeColor}
                 />
               ))}
@@ -195,7 +221,7 @@ export default function Home() {
         )}
 
         {/* No Results */}
-        {searching === false && results.length === 0 && keyword && !error && (
+        {searching === false && Object.keys(results).length === 0 && keyword && !error && (
           <div className="max-w-3xl mx-auto text-center py-12">
             <Search className="w-24 h-24 mx-auto text-white/20 mb-4" />
             <p className="text-xl text-white/50">未找到相关资源</p>
@@ -207,15 +233,55 @@ export default function Home() {
   );
 }
 
-function ResultCard({
-  result,
-  getPanTypeIcon,
+function ResultGroup({
+  typeName,
+  results,
+  expanded,
+  onToggle,
   getPanTypeColor,
 }: {
-  result: SearchResult;
-  getPanTypeIcon: (type: string) => string;
+  typeName: string;
+  results: SearchResult[];
+  expanded: boolean;
+  onToggle: () => void;
   getPanTypeColor: (type: string) => string;
 }) {
+  return (
+    <div className="bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
+      {/* Group Header */}
+      <button
+        onClick={onToggle}
+        className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className={`px-3 py-1.5 rounded-lg text-white text-sm font-medium ${getPanTypeColor(typeName)}`}>
+            {typeName}
+          </div>
+          <span className="text-purple-300 text-sm">{results.length} 条结果</span>
+        </div>
+        <svg
+          className={`w-5 h-5 text-purple-300 transition-transform ${expanded ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Group Content */}
+      {expanded && (
+        <div className="border-t border-white/10 divide-y divide-white/10">
+          {results.map((result, index) => (
+            <ResultItem key={index} result={result} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ResultItem({ result }: { result: SearchResult }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -229,14 +295,10 @@ function ResultCard({
   };
 
   return (
-    <div className="p-5 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 hover:bg-white/10 transition-all hover:border-purple-500/50 group">
+    <div className="p-4 hover:bg-white/5 transition-colors">
       <div className="flex items-start gap-4">
-        <div className={`px-3 py-1.5 rounded-lg text-white text-sm font-medium ${getPanTypeColor(result.type)}`}>
-          {getPanTypeIcon(result.type)}
-        </div>
-
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-purple-400 transition-colors line-clamp-2">
+          <h3 className="text-base font-semibold text-white mb-2 hover:text-purple-400 transition-colors line-clamp-2">
             {result.title}
           </h3>
 
@@ -256,12 +318,12 @@ function ResultCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <a
             href={result.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5"
           >
             打开
             <ExternalLink className="w-4 h-4" />
@@ -269,22 +331,13 @@ function ResultCard({
 
           <button
             onClick={handleCopy}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
               copied
                 ? 'bg-green-600 text-white'
                 : 'bg-white/10 hover:bg-white/20 text-white'
             }`}
           >
-            {copied ? (
-              <>
-                已复制
-              </>
-            ) : (
-              <>
-                复制
-                <Copy className="w-4 h-4" />
-              </>
-            )}
+            {copied ? '已复制' : '复制'}
           </button>
         </div>
       </div>
