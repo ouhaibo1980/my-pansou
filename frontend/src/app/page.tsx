@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Globe, Download, Clock, Shield, Zap } from 'lucide-react';
+import { Search, Globe } from 'lucide-react';
 
 interface SearchResult {
   title: string;
@@ -106,25 +106,6 @@ export default function Home() {
           </div>
         </form>
 
-        {/* Features */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-          <FeatureCard
-            icon={<Zap className="w-8 h-8" />}
-            title="极速搜索"
-            description="并发搜索多个源，快速返回结果"
-          />
-          <FeatureCard
-            icon={<Shield className="w-8 h-8" />}
-            title="安全可靠"
-            description="直接跳转官方网盘，安全无风险"
-          />
-          <FeatureCard
-            icon={<Clock className="w-8 h-8" />}
-            title="智能缓存"
-            description="二级缓存机制，提升重复查询速度"
-          />
-        </div>
-
         {/* Error Message */}
         {error && (
           <div className="max-w-3xl mx-auto mb-8 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200">
@@ -164,16 +145,6 @@ export default function Home() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <div className="p-6 bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
-      <div className="text-purple-400 mb-3">{icon}</div>
-      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-purple-200/70">{description}</p>
     </div>
   );
 }
