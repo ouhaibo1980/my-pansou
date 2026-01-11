@@ -26,7 +26,7 @@ export default function Home() {
     setResults([]);
 
     try {
-      const response = await fetch(`http://localhost:8888/api/search?keyword=${encodeURIComponent(keyword)}`);
+      const response = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`);
       const data = await response.json();
 
       if (data.code === 0 && data.data.merged_by_type) {
