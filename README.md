@@ -427,30 +427,45 @@ pm2 start go run --name "pansou-backend" -- main.go
 在宝塔面板中：
 
 1. 进入 **网站** → **添加站点**
-2. 填写域名（如 `pansou.yourdomain.com`）
-3. 提交后点击 **设置**
-4. 选择 **配置文件** 选项卡
+2. 填写域名（如 `pansou.yourdomain.com`）或直接使用服务器 IP
+3. **PHP版本** 选择「纯静态」
+4. 提交后点击 **设置**
+5. 选择 **配置文件** 选项卡
 
-将以下配置粘贴到 `location /` 之前（替换原有的 location / 块）：
+将完整的配置文件替换为以下内容：
 
 ```nginx
-# 前端代理（前端包含 API 代理，会自动转发到后端）
-location / {
-    proxy_pass http://127.0.0.1:3000;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
+server {
+    listen 80;
+    server_name 你的域名或IP;
+
+    # 前端代理（Next.js 运行在 5000 端口）
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # 后端 API 代理（Go 后端运行在 8888 端口）
+    location /api {
+        proxy_pass http://127.0.0.1:8888;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
 }
 ```
 
-**重要说明**：
-- 前端（Next.js）已经内置了 API 代理，会自动将 `/api/search` 请求转发到后端
-- 不需要在 Nginx 中配置 `/api` 的代理规则
-- 如果配置了 `/api` 代理，可能会与前端 API 代理冲突
+**配置说明**：
+- **前端**：运行在 `127.0.0.1:5000`，提供 Web 界面
+- **后端 API**：运行在 `127.0.0.1:8888`，提供搜索 API
+- **端口映射**：Nginx 监听 80 端口，分别转发到前后端
 
 点击 **保存**，Nginx 会自动重载配置。
 
@@ -487,10 +502,11 @@ pm2 startup
 
 A: 请检查以下几点：
 
-1. **Nginx 配置**：确保只配置了 `/` 的代理，不要配置 `/api` 的代理（前端已有内置 API 代理）
+1. **Nginx 配置**：确保同时配置了 `/` 和 `/api` 的代理
    ```nginx
+   # 前端代理
    location / {
-       proxy_pass http://127.0.0.1:3000;
+       proxy_pass http://127.0.0.1:5000;
        proxy_set_header Host $host;
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -498,6 +514,15 @@ A: 请检查以下几点：
        proxy_http_version 1.1;
        proxy_set_header Upgrade $http_upgrade;
        proxy_set_header Connection "upgrade";
+   }
+
+   # 后端 API 代理
+   location /api {
+       proxy_pass http://127.0.0.1:8888;
+       proxy_set_header Host $host;
+       proxy_set_header X-Real-IP $remote_addr;
+       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       proxy_set_header X-Forwarded-Proto $scheme;
    }
    ```
 
@@ -520,19 +545,15 @@ A: 请检查以下几点：
 
 A: 确保 PM2 管理器已正确安装，或在宝塔面板的 **软件商店** 中重新安装。
 
-#### Q: 前端端口 3000 被占用？
+#### Q: 前端端口 5000 被占用？
 
-A: 可以修改 `frontend/package.json` 中的启动脚本，指定其他端口：
-```json
-"start": "next start -p 3001"
-```
-同时记得更新 Nginx 配置中的 `proxy_pass` 端口。
+A: 可以修改 `.cozeproj/scripts/dev_run.sh` 或 `install.sh` 中的端口配置，同时记得更新 Nginx 配置中的 `proxy_pass` 端口。
 
 #### Q: 后端端口 8888 被占用？
 
-A: 可以在 `main.go` 中修改端口，或者使用环境变量指定：
+A: 可以在 `install.sh` 中修改 `BACKEND_PORT` 环境变量，或者启动时使用 `PORT` 环境变量指定：
 ```bash
-pm2 start go run --name "pansou-backend" -- main.go --port=8889
+PORT=8889 pm2 start ./pansou --name "pansou-backend"
 ```
 
 #### Q: 如何查看日志？
