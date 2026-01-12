@@ -2,20 +2,78 @@
 
 高性能网盘资源搜索引擎，提供美观的 Web 前端界面，支持 77 个搜索源插件。
 
+## 快速开始
+
+### 前后端集成版
+
+#### 直接使用 Docker 命令
+
+一键启动，开箱即用：
+
+```bash
+docker run -d --name pansou -p 5000:5000 ghcr.io/ouhaibo1980/pansou:latest
+```
+
+启动后访问：http://localhost:5000
+
+#### 使用 Docker Compose（推荐）
+
+##### 下载配置文件
+
+```bash
+curl -o docker-compose.yml https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/docker-compose.simple.yml
+```
+
+##### 一键启动
+
+```bash
+docker-compose up -d
+```
+
+启动后访问：http://localhost:5000
+
+##### 管理命令
+
+```bash
+# 停止服务
+docker-compose down
+
+# 重启服务
+docker-compose restart
+
+# 查看日志
+docker-compose logs -f
+```
+
+### 使用源码构建
+
+如果你已经克隆了仓库，可以使用本地代码构建：
+
+```bash
+# 构建镜像
+docker build -t pansou-local .
+
+# 运行容器
+docker run -d --name pansou -p 5000:5000 pansou-local
+```
+
 ## 功能特性
 
 - 🚀 高性能并发搜索
-- 🌐 搜索源插件（电影、音乐、软件、学习资源等）
+- 🌐 支持 77 个搜索源插件（电影、音乐、软件、学习资源等）
 - 💾 自动识别多种网盘类型（百度、阿里云、夸克、天翼云盘等）
 - 🎨 美观的现代化 UI 界面
+- ⚡ 智能结果排序（优化 ouge 插件优先级）
 - 🔌 异步插件系统
-
+- 💾 二级缓存机制
+- 🔒 自动过滤失效链接
+- 🐳 Docker 一键部署，开箱即用
 
 ## 访问地址
 
 - **Web 前端**: http://localhost:5000
-- **API 服务**: http://localhost:8888/api
-- **健康检查**: http://localhost:8888/api/health
+- **API 服务**: http://localhost:5000/api
+- **健康检查**: http://localhost:5000/api/health
 
 ## 技术栈
 
@@ -33,8 +91,8 @@
 
 ### 搜索接口
 ```
-GET http://localhost:8888/api/search?keyword=搜索关键词
-POST http://localhost:8888/api/search
+GET http://localhost:5000/api/search?keyword=搜索关键词
+POST http://localhost:5000/api/search
 Content-Type: application/json
 
 {
@@ -44,7 +102,7 @@ Content-Type: application/json
 
 ### 健康检查
 ```
-GET http://localhost:8888/api/health
+GET http://localhost:5000/api/health
 ```
 
 ## 项目结构
@@ -59,12 +117,14 @@ GET http://localhost:8888/api/health
 ├── plugin/            # 77 个搜索源插件
 ├── pansou            # Go 后端二进制文件
 ├── cache/            # 缓存目录
+├── Dockerfile        # Docker 镜像构建文件
+├── docker-compose.simple.yml  # Docker Compose 简化配置
 └── .coze            # 项目配置
 ```
 
 ## 环境变量
 
-- `PORT`: 后端 API 端口（默认 8888）
+- `PORT`: 服务端口（默认 5000）
 - `GOPROXY`: Go 模块代理
 - `ENABLED_PLUGINS`: 启用的插件列表（77 个插件）
 
@@ -96,8 +156,6 @@ GET http://localhost:8888/api/health
   }
 }
 ```
-}
-```
 
 ## Docker 一键启动
 
@@ -124,8 +182,8 @@ GET http://localhost:8888/api/health
 ### 访问地址
 
 - **Web 前端**: http://localhost:5000
-- **API 服务**: http://localhost:8888/api
-- **健康检查**: http://localhost:8888/api/health
+- **API 服务**: http://localhost:5000/api
+- **健康检查**: http://localhost:5000/api/health
 
 ### 管理命令
 
@@ -143,32 +201,52 @@ docker-compose -p pansou logs -f
 docker-compose -p pansou ps
 ```
 
-### 快速开始（仅需 3 步）
+## 自动同步到 GitHub
+
+项目提供了便捷的自动同步功能，将代码推送到 GitHub 仓库供他人部署。
+
+### 方式一：手动触发同步
+
+当你修改代码后，运行此脚本会自动检测变动并推送到 GitHub：
 
 ```bash
-# 1. 克隆仓库
-git clone git@github.com:ouhaibo1980/my-pansou.git
-cd my-pansou
-
-# 2. 一键启动
-./start_docker.sh
-
-# 3. 访问应用
-# 打开浏览器访问：http://localhost:5000
+# 检测变动并自动同步
+./auto_sync_to_github.sh
 ```
 
-### 容器说明
+脚本会自动：
+- 检测文件变动
+- 添加所有更改
+- 提交（带时间戳）
+- 推送到 GitHub
 
-- **pansou-backend**: 后端 API 服务，运行在 8888 端口
-- **pansou-frontend**: Next.js 前端服务，运行在 5000 端口
-- **pansou-cache**: 数据卷，用于缓存搜索结果
+### 方式二：后台自动监控（推荐）
 
-### 端口说明
+启动守护进程后，每 10 秒自动检测变动并同步：
 
-- 容器内部：前端 3000 端口，后端 8888 端口
-- 主机映射：前端 5000 端口，后端 8888 端口
+```bash
+# 启动守护进程
+./watch_and_sync.sh start
 
-如需修改端口，编辑 `docker-compose.yml` 中的 `ports` 配置。
+# 停止守护进程
+./watch_and_sync.sh stop
 
+# 查看运行状态
+./watch_and_sync.sh status
+```
 
+**特点：**
+- 完全自动化，无需手动操作
+- 每 10 秒检测一次变动
+- 日志记录同步历史：`/tmp/pansou_sync.log`
 
+### GitHub 仓库
+
+- **仓库地址**: https://github.com/ouhaibo1980/my-pansou
+- **SSH URL**: git@github.com:ouhaibo1980/my-pansou.git
+
+**注意**：首次使用需要配置 SSH 密钥并添加到 GitHub 账户。
+
+## 原项目地址
+
+- [PanSou](https://github.com/ouhaibo1980/pansou) - 网盘搜索 API
