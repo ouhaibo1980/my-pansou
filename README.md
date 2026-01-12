@@ -114,7 +114,7 @@ pm2 delete "我的网盘搜索-backend"
 **方式 1：直接安装（推荐）**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 ```
 
 **方式 2：使用 GitHub 代理（无法直接访问 GitHub 时使用）**
@@ -125,16 +125,16 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 
 ```bash
 # 代理 1：https://gh.ddlc.top（推荐，延迟低）
-curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 
 # 代理 2：http://gh.927223.xyz（速度快）
-curl -fsSL http://gh.927223.xyz/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+curl -fsSL http://gh.927223.xyz/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 
 # 代理 3：https://gh.felicity.ac.cn（稳定）
-curl -fsSL https://gh.felicity.ac.cn/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+curl -fsSL https://gh.felicity.ac.cn/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 
 # 代理 4：https://gh-proxy.com（常用）
-curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 ```
 
 **获取更多代理：**
@@ -159,7 +159,7 @@ curl -s http://api.suxun.site/api/github
 **先下载再执行（更安全）**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && sudo chmod +x install.sh && sudo ./install.sh
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && sudo chmod +x install.sh && sudo ./install.sh ou="装歌盘搜"
 ```
 
 
@@ -219,14 +219,14 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 **或者使用一键启动命令（无需预先克隆代码）**：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh ou="装歌盘搜"
 ```
 
 **使用 GitHub 代理启动（无法直接访问 GitHub）**：
 
 ```bash
 # 使用 GitHub 代理
-curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh ou="装歌盘搜"
 ```
 
 
@@ -482,7 +482,7 @@ A: 如果无法访问 GitHub，可以使用以下方法：
 # 3. https://gh.felicity.ac.cn
 
 # 使用示例
-curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 ```
 
 **获取更多代理：**
@@ -497,10 +497,10 @@ curl -s http://api.suxun.site/api/github
 **方法 2：使用本地代理执行安装命令**
 ```bash
 # HTTP/HTTPS 代理
-curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 
 # SOCKS5 代理
-curl -fsSL --socks5 127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+curl -fsSL --socks5 127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 ```
 
 **方法 3：配置 Git 代理**
