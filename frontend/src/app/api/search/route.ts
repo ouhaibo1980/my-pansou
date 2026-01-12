@@ -15,19 +15,27 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    console.log(`[API Search] Searching for: ${keyword}`);
+
     // 代理请求到后端 API（后端期望的参数名是 kw，不是 keyword）
-    const backendUrl = `http://localhost:8888/api/search?kw=${encodeURIComponent(keyword)}`;
+    // 添加 refresh=true 参数，确保获取最新搜索结果
+    const backendUrl = `http://localhost:8888/api/search?kw=${encodeURIComponent(keyword)}&refresh=true`;
+    
+    console.log(`[API Search] Backend URL: ${backendUrl}`);
     
     // 创建超时控制器
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
     
+    console.log(`[API Search] Starting fetch...`);
     const response = await fetch(backendUrl, {
       cache: 'no-store',
       signal: controller.signal,
     });
     
     clearTimeout(timeoutId);
+    
+    console.log(`[API Search] Response status: ${response.status}`);
 
     if (!response.ok) {
       throw new Error(`Backend API returned ${response.status}`);
