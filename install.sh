@@ -65,6 +65,28 @@ else
     BT_INSTALLED=false
 fi
 
+# 1.5 配置国内镜像源（解决网络问题）
+echo ""
+echo -e "${BLUE}⚙️  配置国内镜像源...${NC}"
+
+# 配置 npm 使用淘宝镜像
+echo "   - 配置 npm 淘宝镜像..."
+if command -v npm &> /dev/null; then
+    npm config set registry https://registry.npmmirror.com
+fi
+
+# 配置 pnpm 使用淘宝镜像
+echo "   - 配置 pnpm 淘宝镜像..."
+if command -v pnpm &> /dev/null; then
+    pnpm config set registry https://registry.npmmirror.com
+fi
+
+# 配置 Go 使用国内代理
+echo "   - 配置 Go 国内代理..."
+export GOPROXY=https://goproxy.cn,direct
+
+echo -e "${GREEN}✅ 镜像源配置完成${NC}"
+
 # 2. 检测并安装 Node.js 和 PM2
 echo ""
 echo -e "${BLUE}📦 检测 Node.js...${NC}"
@@ -93,7 +115,20 @@ echo ""
 echo -e "${BLUE}📦 检测 Go...${NC}"
 if ! command -v go &> /dev/null; then
     echo -e "${YELLOW}⚠️  未检测到 Go，正在安装...${NC}"
-    wget -O /tmp/go1.24.linux-amd64.tar.gz https://go.dev/dl/go1.24.0.linux-amd64.tar.gz
+
+    # 尝试从官方下载
+    echo "   - 从官方源下载 Go..."
+    if ! wget -O /tmp/go1.24.linux-amd64.tar.gz https://go.dev/dl/go1.24.0.linux-amd64.tar.gz --timeout=30; then
+        echo "   - 官方源下载失败，尝试从国内镜像下载..."
+        # 尝试从腾讯云镜像下载
+        wget -O /tmp/go1.24.linux-amd64.tar.gz https://mirrors.cloud.tencent.com/golang/go1.24.0.linux-amd64.tar.gz --timeout=30 || \
+        # 尝试从阿里云镜像下载
+        wget -O /tmp/go1.24.linux-amd64.tar.gz https://mirrors.aliyun.com/golang/go1.24.0.linux-amd64.tar.gz || {
+            echo -e "${RED}❌ Go 下载失败，请手动安装${NC}"
+            exit 1
+        }
+    fi
+
     tar -C /usr/local -xzf /tmp/go1.24.linux-amd64.tar.gz
     echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
     source /etc/profile
@@ -154,6 +189,10 @@ echo -e "${GREEN}✅ 前端配置已生成${NC}"
 echo ""
 echo -e "${BLUE}🔧 安装前端...${NC}"
 cd frontend
+
+# 确保使用国内镜像源
+pnpm config set registry https://registry.npmmirror.com
+
 echo "   - 安装依赖..."
 pnpm install --silent
 echo "   - 构建前端..."

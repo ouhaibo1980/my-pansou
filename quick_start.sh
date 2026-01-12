@@ -65,6 +65,13 @@ fi
 
 echo -e "${GREEN}✅ 环境检查通过${NC}"
 
+# 1.5 配置国内镜像源
+echo ""
+echo -e "${BLUE}⚙️  配置国内镜像源...${NC}"
+pnpm config set registry https://registry.npmmirror.com
+export GOPROXY=https://goproxy.cn,direct
+echo -e "${GREEN}✅ 镜像源配置完成${NC}"
+
 # 2. 启动后端
 echo ""
 echo -e "${BLUE}🔧 启动后端...${NC}"

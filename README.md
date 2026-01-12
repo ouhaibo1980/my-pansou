@@ -181,6 +181,14 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 ```
 
 
+**先下载再执行（更安全）**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && sudo chmod +x install.sh && sudo ./install.sh ou="装歌盘搜"
+```
+
+**注意**：安装脚本已自动配置国内镜像源（npm/pnpm 使用淘宝镜像，Go 使用 goproxy.cn），无需手动配置。
+
 这条命令会自动：
 - 下载安装脚本
 - 克隆项目代码
@@ -470,6 +478,51 @@ pm2 logs my-backend
 # 清空日志
 pm2 flush
 ```
+
+#### Q: 安装时报错 "Failed to connect to cdn.jsdelivr.net" 怎么办？
+
+A: 这是因为网络无法访问 jsdelivr CDN，脚本已自动配置国内镜像源，但如果仍有问题：
+
+**1. 手动配置 npm/pnpm 镜像源**
+
+```bash
+# 配置 npm 使用淘宝镜像
+npm config set registry https://registry.npmmirror.com
+
+# 配置 pnpm 使用淘宝镜像
+pnpm config set registry https://registry.npmmirror.com
+```
+
+**2. 配置 Go 使用国内代理**
+
+```bash
+# 设置 Go 模块代理
+export GOPROXY=https://goproxy.cn,direct
+
+# 或写入配置文件永久生效
+echo 'export GOPROXY=https://goproxy.cn,direct' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**3. 重新执行安装脚本**
+
+脚本会自动使用配置好的镜像源：
+
+```bash
+sudo ./install.sh ou="装歌盘搜"
+```
+
+**4. 如果仍然失败，检查网络**
+
+```bash
+# 测试是否可以访问淘宝 npm 镜像
+curl -I https://registry.npmmirror.com
+
+# 测试是否可以访问 Go 代理
+curl -I https://goproxy.cn
+```
+
+**注意**：最新版本的 install.sh 脚本（v1.1+）已自动配置国内镜像源，无需手动配置。
 
 #### Q: 如何使用自定义的项目名称？
 
