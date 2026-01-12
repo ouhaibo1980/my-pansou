@@ -117,12 +117,26 @@ pm2 delete "我的网盘搜索-backend"
 
 ### 真正的一键安装
 
-无需预先克隆代码，直接执行以下命令即可完成全部安装：
+无需预先克隆代码，直接执行以下命令即可完成全部安装。
 
-**方式 1：直接安装（推荐）**
+**安装脚本会自动选择最合适的 Node.js 版本：**
+- **新系统（glibc >= 2.28）**：自动使用 Node.js 20.x
+- **旧系统（glibc 2.17，如 CentOS 7）**：自动使用 Node.js 18.x
+
+**方式 1：直接安装（推荐，自动选择版本）**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
+
+**方式 2：手动指定 Node.js 版本**
+
+```bash
+# 强制使用 Node.js 18.x（兼容所有系统）
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜" --node-version=18
+
+# 强制使用 Node.js 20.x（需要较新的系统）
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜" --node-version=20
 ```
 
 **方式 2：使用 GitHub 代理（无法直接访问 GitHub 时使用）**
@@ -761,15 +775,62 @@ go run main.go
 ## 技术栈
 
 ### 前端
-- **Node.js >= 20.9.0**（必需）
-- Next.js 16 (App Router)
-- React 19
+- **Node.js >= 18.18.0**（推荐 18.x）
+- Next.js 15.0.4 (App Router)
+- React 18.3.1
 - Tailwind CSS 4
 - Lucide React (图标库)
 
 ### 后端
 - Go 1.24
 - Gin Web 框架
+
+## 系统要求
+
+### 最低要求
+- **操作系统**：Linux（Ubuntu 18.04+, CentOS 7+, OpenCloudOS, 麒麟等）
+- **内存**：>= 512MB
+- **磁盘空间**：>= 2GB
+- **Node.js**：>= 18.18.0（自动选择 18.x 或 20.x）
+- **Go**：1.24
+
+### 智能版本选择
+
+安装脚本会根据系统类型自动选择最合适的 Node.js 版本：
+
+**自动选择规则：**
+| glibc 版本 | 系统示例 | 自动选择的 Node.js 版本 |
+|-----------|---------|---------------------|
+| >= 2.28 | Ubuntu 20.04+, Debian 11+, CentOS 8+, Rocky Linux, AlmaLinux | 20.x |
+| 2.17 | CentOS 7, OpenCloudOS, 麒麟系统 | 18.x |
+
+**手动指定版本：**
+```bash
+# 强制使用 Node.js 18.x（兼容所有系统）
+./install.sh --node-version=18
+
+# 强制使用 Node.js 20.x（需要较新的系统）
+./install.sh --node-version=20
+
+# 自动选择（推荐）
+./install.sh
+```
+
+### 系统兼容性说明
+
+**CentOS 7 / OpenCloudOS / 麒麟系统（glibc 2.17）：**
+- ✅ 自动使用 Node.js 18.x
+- ❌ 不支持 Node.js 20.x
+- 推荐：使用默认安装方式（自动选择）
+
+**Ubuntu 20.04+ / Debian 11+ / CentOS 8+ / Rocky Linux / AlmaLinux（glibc >= 2.28）：**
+- ✅ 自动使用 Node.js 20.x（性能更好）
+- ✅ 也支持手动降级到 Node.js 18.x
+- 推荐：使用默认安装方式（自动选择）
+
+**Next.js 版本说明：**
+- 当前使用 **Next.js 15.0.4**（支持 Node.js >= 18.18.0）
+- 兼容所有主流 Linux 发行版（包括 CentOS 7）
 
 ## API 接口
 

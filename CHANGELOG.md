@@ -1,5 +1,111 @@
 # 更新日志
 
+## [1.2.1] - 2024-01-12
+
+### 重要更新
+
+- **实现智能 Node.js 版本选择**
+- **兼容所有 Linux 系统（新系统用 20.x，旧系统用 18.x）**
+- **添加 --node-version 参数支持手动选择**
+
+### 新增功能
+
+#### 🔍 智能版本选择
+
+安装脚本现在会根据系统 glibc 版本自动选择最合适的 Node.js 版本：
+
+**自动选择规则：**
+| glibc 版本 | 系统示例 | 自动选择的 Node.js 版本 |
+|-----------|---------|---------------------|
+| >= 2.28 | Ubuntu 20.04+, Debian 11+, CentOS 8+, Rocky Linux, AlmaLinux | 20.x |
+| 2.17 | CentOS 7, OpenCloudOS, 麒麟系统 | 18.x |
+
+**使用示例：**
+```bash
+# 自动选择版本（推荐）
+./install.sh ou="装歌盘搜"
+
+# 手动指定 Node.js 18.x
+./install.sh ou="装歌盘搜" --node-version=18
+
+# 手动指定 Node.js 20.x
+./install.sh ou="装歌盘搜" --node-version=20
+```
+
+### 改进
+
+- **智能检测系统环境**：自动检测 glibc 版本
+- **自动选择最优版本**：新系统用 Node.js 20.x（性能更好），旧系统用 Node.js 18.x（兼容性更好）
+- **灵活的手动控制**：支持 --node-version 参数手动指定版本
+- **兼容性大幅提升**：真正实现"所有系统要兼容"的目标
+
+### 文档更新
+
+- 更新 `README.md` - 添加"智能版本选择"章节
+- 更新 `README.md` - 添加系统兼容性对比表
+- 更新 `NETWORK_ISSUE.md` - 更新 glibc 版本不兼容的解决方案（使用智能版本选择）
+
+### 技术细节
+
+- glibc >= 2.28：Node.js 20.18.0（性能更好）
+- glibc < 2.28：Node.js 18.20.4（兼容性更好）
+- 自动检测系统架构（x64/arm64）
+- 支持所有主流 Linux 发行版
+
+## [1.2.0] - 2024-01-12
+
+### 重要更新
+
+- **降级 Next.js 到 15.0.4，兼容 Node.js >= 18.18.0**
+- **兼容 CentOS 7 / OpenCloudOS / 麒麟系统（glibc 2.17）**
+- **解决 glibc 版本不兼容导致的 Node.js 20.x 安装失败问题**
+
+### 技术栈调整
+
+#### 前端
+- Next.js: 16.0.10 → 15.0.4
+- React: 19.2.1 → 18.3.1
+- @types/react: 19 → 18
+- @types/react-dom: 19 → 18
+- eslint-config-next: 16.0.10 → 15.0.4
+
+#### 后端
+- 保持不变：Go 1.24, Gin
+
+### 改进
+
+- **降级 Node.js 要求**：从 >= 20.9.0 降级到 >= 18.18.0
+- **兼容旧系统**：支持 CentOS 7 等使用 glibc 2.17 的系统
+- **自动选择版本**：install.sh 自动选择 Node.js 18.x（移除了 20.x 要求）
+- **优化兼容性**：移除了对新系统特性的依赖
+
+### 文档更新
+
+- 更新 `README.md` - 添加"系统要求"章节，详细说明版本兼容性
+- 更新 `README.md` - 更新技术栈说明（Next.js 15.0.4, React 18.3.1）
+- 更新 `NETWORK_ISSUE.md` - 添加"错误 2: glibc 版本不兼容"详细说明
+- 更新 `NETWORK_ISSUE.md` - 移除旧的 Node.js 版本升级说明
+- 添加系统兼容性对比表
+
+### Bug 修复
+
+- 修复 CentOS 7 / OpenCloudOS / 麒麟系统无法安装的问题
+- 修复 glibc 版本不兼容导致的 Node.js 20.x 安装失败
+- 移除 upgrade_nodejs.sh 中的 Node.js 20.x 强制升级逻辑
+
+### 重大变更
+
+**注意**：如果你已安装 v1.1.x 版本，建议重新安装以获取兼容性更新：
+
+```bash
+# 卸载旧版本
+cd /www/wwwroot
+./pansou/uninstall.sh
+
+# 重新安装（兼容 CentOS 7）
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
+
 ## [1.1.4] - 2024-01-12
 
 ### 重要更新

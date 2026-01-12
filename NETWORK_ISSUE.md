@@ -1,26 +1,17 @@
 # 宝塔安装网络问题解决方案
 
+## Node.js 版本要求
+
+**当前项目版本要求：Node.js >= 18.18.0（推荐 18.x）**
+
+从 v1.2.0 版本开始，项目已优化兼容性：
+- 降级 Next.js 到 15.0.4（支持 Node.js >= 18.18.0）
+- 兼容 CentOS 7 / OpenCloudOS / 麒麟系统（glibc 2.17）
+- 移除了对 Node.js 20.x 的强制要求
+
 ## 问题描述
 
 在执行安装脚本时，可能会遇到以下错误：
-
-```
-You are using Node.js 18.20.8. For Next.js, Node.js version ">=20.9.0" is required.
-```
-
-## Node.js 版本要求
-
-**Next.js 16 要求 Node.js 版本 >= 20.9.0**
-
-从 v1.1.4 版本开始，install.sh 脚本已将 Node.js 版本升级到 20.x：
-
-### 自动安装的 Node.js 版本
-
-- **Ubuntu/Debian/CentOS/RHEL/Rocky/AlmaLinux**: Node.js 20.x（通过 NodeSource）
-- **OpenCloudOS/AnolisOS/麒麟系统**: Node.js 20.18.0（官方二进制包）
-- **其他系统**: Node.js 20.x（通过 nvm）
-
-## 错误 2: Node.js 版本不兼容
 
 在执行安装脚本时，可能会遇到以下错误：
 
@@ -198,65 +189,92 @@ curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-
 
 ## 常见错误信息
 
-### 错误 2: Node.js 版本不兼容
+### 错误 2: glibc 版本不兼容（Node.js 20.x 无法安装）
 
 **错误信息：**
 ```
-> frontend@0.1.0 build /www/wwwroot/pansou/frontend
-> next build --silent
-
-You are using Node.js 18.20.8. For Next.js, Node.js version ">=20.9.0" is required.
- ELIFECYCLE  Command failed with exit code 1
+Error: Package: 2:nodejs-20.19.6-1nodesource.x86_64 (nodesource-nodejs)
+           Requires: glibc >= 2.28
+           Installed: glibc-2.17-326.el7_9.3.i686 (@updates)
+               glibc = 2.17-326.el7_9.3
 ```
 
 **原因**：
-- Next.js 16 要求 Node.js 版本 >= 20.9.0
-- 当前系统安装的是 Node.js 18.x 版本，不满足要求
+- 你的系统是 CentOS 7 / OpenCloudOS / 麒麟系统，glibc 版本是 2.17
+- Node.js 20.x 需要 glibc >= 2.28
+- **系统太老，无法安装 Node.js 20.x**
 
-**解决方案 1：重新安装项目（推荐）**
+**解决方案 1：使用智能版本选择（推荐）**
 
-使用最新版本的 install.sh（v1.1.4+）重新安装，会自动安装 Node.js 20.x：
+从 v1.2.1 版本开始，安装脚本支持智能版本选择，自动根据系统选择最合适的 Node.js 版本：
 
 ```bash
-# 先卸载旧版本
-cd /www/wwwroot
-./pansou/uninstall.sh
+# 自动选择版本（推荐，CentOS 7 自动使用 Node.js 18.x）
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 
-# 重新安装（会自动安装 Node.js 20.x）
+# 或手动指定使用 Node.js 18.x
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜" --node-version=18
+```
+
+**智能版本选择规则：**
+
+| glibc 版本 | 系统示例 | 自动选择的 Node.js 版本 |
+|-----------|---------|---------------------|
+| >= 2.28 | Ubuntu 20.04+, Debian 11+, CentOS 8+, Rocky Linux | 20.x |
+| 2.17 | CentOS 7, OpenCloudOS, 麒麟系统 | 18.x |
+
+**解决方案 2：手动使用 Node.js 18.x 二进制包**
+
+```bash
+# 卸载 Node.js 20.x（如果已尝试安装）
+rm -rf /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
+rm -rf /usr/bin/node /usr/bin/npm /usr/bin/npx
+
+# 下载 Node.js 18.x 二进制包
+wget -O /tmp/node-v18.20.4-linux-x64.tar.xz https://mirrors.cloud.tencent.com/nodejs-release/v18.20.4/node-v18.20.4-linux-x64.tar.xz
+
+# 安装
+tar -xf /tmp/node-v18.20.4-linux-x64.tar.xz -C /usr/local --strip-components=1
+ln -sf /usr/local/bin/node /usr/bin/node
+ln -sf /usr/local/bin/npm /usr/bin/npm
+ln -sf /usr/local/bin/npx /usr/bin/npx
+rm /tmp/node-v18.20.4-linux-x64.tar.xz
+
+# 验证
+node -v  # 应该显示 v18.20.4
+
+# 重新安装 PM2 和 pnpm
+npm install -g pm2 pnpm
+
+# 配置国内镜像
+npm config set registry https://registry.npmmirror.com
+pnpm config set registry https://registry.npmmirror.com
+
+# 重新构建前端
+cd /www/wwwroot/pansou/frontend
+rm -rf .next node_modules
+pnpm install && pnpm build
+
+# 重启服务
+pm2 restart all
+```
+
+**解决方案 3：升级系统（长期解决方案）**
+
+如果需要使用 Node.js 20.x，建议升级系统到更新的版本：
+- CentOS 8+ / Stream
+- Rocky Linux 8+
+- AlmaLinux 8+
+- Ubuntu 20.04+
+- Debian 11+
+
+升级后重新运行安装脚本，会自动选择 Node.js 20.x：
+
+```bash
 curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 ```
 
-**解决方案 2：手动升级 Node.js**
-
-```bash
-# 卸载旧版本 Node.js（根据安装方式选择）
-
-# 如果是通过包管理器安装（Ubuntu/Debian）
-sudo apt-get remove -y nodejs
-
-# 如果是通过包管理器安装（CentOS/RHEL）
-sudo yum remove -y nodejs
-
-# 如果是手动安装的二进制包
-sudo rm -rf /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
-
-# 重新安装 Node.js 20.x
-
-# Ubuntu/Debian
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
-sudo apt-get install -y nodejs
-
-# CentOS/RHEL
-curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
-sudo yum install -y nodejs
-
-# OpenCloudOS/AnolisOS/麒麟（手动安装）
-wget -O /tmp/node-v20.18.0-linux-x64.tar.xz https://nodejs.org/dist/v20.18.0/node-v20.18.0-linux-x64.tar.xz
-sudo tar -xf /tmp/node-v20.18.0-linux-x64.tar.xz -C /usr/local --strip-components=1
-sudo ln -sf /usr/local/bin/node /usr/bin/node
-sudo ln -sf /usr/local/bin/npm /usr/bin/npm
-sudo ln -sf /usr/local/bin/npx /usr/bin/npx
-sudo rm /tmp/node-v20.18.0-linux-x64.tar.xz
+### 错误 1: OpenCloudOS/AnolisOS NodeSource 安装失败
 
 # 验证安装
 node -v  # 应该显示 v20.x.x
