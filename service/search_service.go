@@ -985,6 +985,30 @@ func isEmpty(line string) bool {
 }
 
 // 将搜索结果按网盘类型分组
+// 无效链接关键词列表（用于过滤失效链接）
+var invalidLinkKeywords = []string{
+	"该分享已被取消",
+	"无法访问",
+	"失效",
+	"分享已过期",
+	"链接已失效",
+	"文件已删除",
+	"资源已失效",
+	"分享失效",
+	"资源已下架",
+}
+
+// containsInvalidKeywords 检查文本是否包含无效链接关键词
+func containsInvalidKeywords(text string) bool {
+	lowerText := strings.ToLower(text)
+	for _, keyword := range invalidLinkKeywords {
+		if strings.Contains(lowerText, strings.ToLower(keyword)) {
+			return true
+		}
+	}
+	return false
+}
+
 func mergeResultsByType(results []model.SearchResult, keyword string, cloudTypes []string) model.MergedLinks {
 	// 创建合并结果的映射
 	mergedLinks := make(model.MergedLinks, 12) // 预分配容量，假设有12种不同的网盘类型
@@ -1116,6 +1140,11 @@ func mergeResultsByType(results []model.SearchResult, keyword string, cloudTypes
 			
 			// 赋值给Note前，支持多个关键词裁剪
 			title = util.CutTitleByKeywords(title, []string{"简介", "描述"})
+			
+			// 过滤包含无效关键词的链接
+			if containsInvalidKeywords(title) || containsInvalidKeywords(link.URL) {
+				continue
+			}
 			
 			// 优先使用链接自己的时间，如果没有则使用搜索结果的时间
 			linkDatetime := result.Datetime
