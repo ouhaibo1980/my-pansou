@@ -17,6 +17,11 @@ PROJECT_DIR="/www/wwwroot/pansou"
 FRONTEND_PORT=3000
 BACKEND_PORT=8888
 
+# 代理配置（通过环境变量设置）
+HTTP_PROXY="${HTTP_PROXY:-}"
+HTTPS_PROXY="${HTTPS_PROXY:-}"
+ALL_PROXY="${ALL_PROXY:-}"
+
 echo "=========================================="
 echo "装歌盘搜 - 快速安装脚本"
 echo "=========================================="
@@ -94,7 +99,23 @@ if [ -d "$PROJECT_DIR" ]; then
 else
     echo -e "${BLUE}📥 克隆项目代码...${NC}"
     cd "$(dirname "$PROJECT_DIR")"
+
+    # 配置 Git 代理（如果设置了环境变量）
+    if [ -n "$ALL_PROXY" ]; then
+        echo -e "${YELLOW}   使用代理: $ALL_PROXY${NC}"
+        export GIT_SSH_COMMAND="ssh -o ProxyCommand='nc -X 5 -x $ALL_PROXY %h %p'"
+    elif [ -n "$HTTP_PROXY" ]; then
+        echo -e "${YELLOW}   使用 HTTP 代理: $HTTP_PROXY${NC}"
+        git config --global http.proxy "$HTTP_PROXY"
+        git config --global https.proxy "$HTTP_PROXY"
+    fi
+
     git clone https://github.com/ouhaibo1980/my-pansou.git pansou
+
+    # 清除 Git 代理配置
+    git config --global --unset http.proxy 2>/dev/null || true
+    git config --global --unset https.proxy 2>/dev/null || true
+
     cd "$PROJECT_DIR"
 fi
 
@@ -115,6 +136,13 @@ echo ""
 echo -e "${BLUE}🔧 安装后端...${NC}"
 cd ..
 echo "   - 下载 Go 依赖..."
+
+# 配置 Go 代理（国内用户推荐）
+if [ -z "$GOPROXY" ]; then
+    export GOPROXY=https://goproxy.cn,direct
+    echo -e "${YELLOW}   使用 Go 代理: $GOPROXY${NC}"
+fi
+
 go mod download
 echo "   - 编译后端..."
 go build -o pansou main.go

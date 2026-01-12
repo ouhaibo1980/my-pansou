@@ -8,14 +8,47 @@
 
 无需预先克隆代码，直接执行以下命令即可完成全部安装：
 
+**方式 1：直接安装（推荐）**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
 ```
 
-**或者使用更安全的方式（推荐）**：
+**方式 2：带代理安装（无法访问 GitHub 时使用）**
+
+如果你的网络无法访问 GitHub，可以使用代理：
+
+```bash
+# 使用 HTTP/HTTPS 代理
+curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+
+# 或使用 SOCKS5 代理
+curl -fsSL --socks5 127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+```
+
+**方式 3：使用环境变量配置代理**
+
+```bash
+# 设置代理环境变量
+export HTTP_PROXY=http://127.0.0.1:7890
+export HTTPS_PROXY=http://127.0.0.1:7890
+
+# 然后执行安装（脚本会自动使用环境变量中的代理）
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+```
+
+**注意**：将 `127.0.0.1:7890` 替换为你的代理地址和端口。
+
+**方式 3：先下载再执行（更安全）**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && sudo chmod +x install.sh && sudo ./install.sh
+```
+
+**带代理的方式 3**：
+
+```bash
+curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && sudo chmod +x install.sh && sudo ./install.sh
 ```
 
 这条命令会自动：
@@ -51,7 +84,13 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
 ```
 
-**注意**：这个命令需要在已克隆的项目目录中运行。
+**带代理的一键启动**：
+
+```bash
+curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
+```
+
+**注意**：这个命令需要在已克隆的项目目录中运行。将 `127.0.0.1:7890` 替换为你的代理地址和端口。
 
 ### 手动快速安装
 
@@ -260,6 +299,43 @@ pm2 logs pansou-backend
 # 清空日志
 pm2 flush
 ```
+
+#### Q: 无法访问 GitHub 怎么办？
+
+A: 如果无法访问 GitHub，可以使用以下方法：
+
+**方法 1：使用代理执行安装命令**
+```bash
+# HTTP/HTTPS 代理
+curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+
+# SOCKS5 代理
+curl -fsSL --socks5 127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+```
+
+**方法 2：配置 Git 代理**
+```bash
+# 配置 HTTP 代理
+git config --global http.proxy http://127.0.0.1:7890
+git config --global https.proxy http://127.0.0.1:7890
+
+# 取消代理
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
+**方法 3：配置 Go 代理（下载依赖时）**
+```bash
+# 设置 Go 模块代理（国内用户推荐）
+export GOPROXY=https://goproxy.cn,direct
+
+# 或设置到环境变量文件
+echo 'export GOPROXY=https://goproxy.cn,direct' >> /etc/profile
+source /etc/profile
+```
+
+**方法 4：从国内镜像源下载**
+如果有条件，可以先将代码下载到本地，然后上传到服务器。
 
 #### Q: 如何重启服务？
 
