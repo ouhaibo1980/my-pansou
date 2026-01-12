@@ -3,38 +3,33 @@ set -Eeuo pipefail
 
 cd "${COZE_WORKSPACE_PATH}"
 
-export ENV=production
-export PORT=8888
-export GOPROXY=https://goproxy.cn,direct
-
-# 启用所有搜索源插件（77个）
-export ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj"
-
 # 停止现有进程
 pids=$(ss -lptn 'sport = :5000' 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2)
+[ -n "$pids" ] && kill -9 $pids 2>/dev/null
+pids=$(ss -lptn 'sport = :6000' 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2)
 [ -n "$pids" ] && kill -9 $pids 2>/dev/null
 pids=$(ss -lptn 'sport = :8888' 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2)
 [ -n "$pids" ] && kill -9 $pids 2>/dev/null
 sleep 2
 
 # 启动后端 API 服务
-echo "Starting 装歌盘搜 API service on port 8888..."
-nohup ./pansou > /tmp/pansou.log 2>&1 &
+echo "Starting 装歌盘搜 API service on port 6000..."
+ENV=production PORT=6000 GOPROXY=https://goproxy.cn,direct ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj" nohup ./pansou > /tmp/pansou.log 2>&1 &
 sleep 3
 
 # 检查后端是否启动成功
-if ! ss -tuln 2>/dev/null | grep -q ':8888.*LISTEN'; then
+if ! ss -tuln 2>/dev/null | grep -q ':6000.*LISTEN'; then
   echo "ERROR: Failed to start 装歌盘搜 API service"
   tail -20 /tmp/pansou.log
   exit 1
 fi
 
-echo "✅ 装歌盘搜 API started on port 8888"
+echo "✅ 装歌盘搜 API started on port 6000"
 
 # 启动前端服务
 echo "Starting frontend on port 5000..."
 cd frontend
-nohup pnpm dev --port 5000 > /tmp/frontend.log 2>&1 &
+nohup npm run dev -- --port 5000 > /tmp/frontend.log 2>&1 &
 
 # 等待前端启动
 sleep 5
@@ -48,4 +43,4 @@ fi
 echo "✅ Frontend started on port 5000"
 echo "🚀 All services started successfully!"
 echo "   Frontend: http://localhost:5000"
-echo "   API: http://localhost:8888/api"
+echo "   API: http://localhost:6000/api"

@@ -42,10 +42,10 @@ echo ""
 # 1. 检查环境
 echo -e "${BLUE}🔍 检查环境...${NC}"
 
-# 检查 pnpm
-if ! command -v pnpm &> /dev/null; then
-    echo -e "${RED}❌ 未检测到 pnpm${NC}"
-    echo "   请先安装: npm install -g pnpm"
+# 检查 npm
+if ! command -v npm &> /dev/null; then
+    echo -e "${RED}❌ 未检测到 npm${NC}"
+    echo "   请先安装 Node.js"
     exit 1
 fi
 
@@ -68,7 +68,7 @@ echo -e "${GREEN}✅ 环境检查通过${NC}"
 # 1.5 配置国内镜像源
 echo ""
 echo -e "${BLUE}⚙️  配置国内镜像源...${NC}"
-pnpm config set registry https://registry.npmmirror.com
+npm config set registry https://registry.npmmirror.com
 export GOPROXY=https://goproxy.cn,direct
 echo -e "${GREEN}✅ 镜像源配置完成${NC}"
 
@@ -132,8 +132,8 @@ echo -e "${GREEN}✅ 启动成功！${NC}"
 echo "=========================================="
 echo ""
 echo "📱 访问地址："
-echo "   - Web 前端: http://localhost:3000"
-echo "   - API 服务: http://localhost:8888/api"
+echo "   - Web 前端: http://localhost:5000"
+echo "   - API 服务: http://localhost:6000/api"
 echo ""
 echo "🔧 管理命令："
 echo "   查看状态: pm2 list"

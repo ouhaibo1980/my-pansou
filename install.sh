@@ -15,8 +15,8 @@ NC='\033[0m' # No Color
 # 默认配置
 DEFAULT_PROJECT_NAME="装歌盘搜"
 PROJECT_DIR="/www/wwwroot/pansou"
-FRONTEND_PORT=3000
-BACKEND_PORT=8888
+FRONTEND_PORT=5000
+BACKEND_PORT=6000
 
 # 代理配置（通过环境变量设置）
 HTTP_PROXY="${HTTP_PROXY:-}"
@@ -196,14 +196,14 @@ if ! command -v go &> /dev/null; then
 fi
 echo -e "${GREEN}✅ Go 已安装${NC}"
 
-# 4. 检测并安装 pnpm
+# 4. 检测并安装依赖（使用 npm）
 echo ""
-echo -e "${BLUE}📦 检测 pnpm...${NC}"
-if ! command -v pnpm &> /dev/null; then
-    echo -e "${YELLOW}⚠️  未检测到 pnpm，正在安装...${NC}"
-    npm install -g pnpm
+echo -e "${BLUE}📦 检测 npm...${NC}"
+if ! command -v npm &> /dev/null; then
+    echo -e "${RED}❌ npm 未安装，请先安装 Node.js${NC}"
+    exit 1
 fi
-echo -e "${GREEN}✅ pnpm 已安装${NC}"
+echo -e "${GREEN}✅ npm 已就绪 (版本: $(npm -v))${NC}"
 
 # 5. 创建项目目录
 echo ""
@@ -251,12 +251,12 @@ echo -e "${BLUE}🔧 安装前端...${NC}"
 cd frontend
 
 # 确保使用国内镜像源
-pnpm config set registry https://registry.npmmirror.com
+npm config set registry https://registry.npmmirror.com
 
 echo "   - 安装依赖..."
-pnpm install
+npm install --legacy-peer-deps
 echo "   - 构建前端..."
-pnpm build
+npm run build
 echo -e "${GREEN}✅ 前端安装完成${NC}"
 
 # 7. 安装后端
@@ -319,7 +319,7 @@ if [ "$BT_INSTALLED" = true ]; then
     echo "   前端代理配置："
     echo "   ```nginx"
     echo "   location / {"
-    echo "       proxy_pass http://127.0.0.1:3000;"
+    echo "       proxy_pass http://127.0.0.1:5000;"
     echo "       proxy_set_header Host \$host;"
     echo "       proxy_set_header X-Real-IP \$remote_addr;"
     echo "       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;"
@@ -329,7 +329,7 @@ if [ "$BT_INSTALLED" = true ]; then
     echo "   后端 API 代理配置："
     echo "   ```nginx"
     echo "   location /api {"
-    echo "       proxy_pass http://127.0.0.1:8888;"
+    echo "       proxy_pass http://127.0.0.1:6000;"
     echo "       proxy_set_header Host \$host;"
     echo "       proxy_set_header X-Real-IP \$remote_addr;"
     echo "       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;"
