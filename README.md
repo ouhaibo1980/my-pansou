@@ -4,14 +4,29 @@
 
 ## 快速安装（推荐）
 
-### 一键安装脚本
+### 真正的一键安装
 
-适用于全新服务器环境，自动检测并安装所有依赖。
+无需预先克隆代码，直接执行以下命令即可完成全部安装：
 
 ```bash
-# 下载并运行安装脚本（需要 root 权限）
-sudo ./install.sh
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
 ```
+
+**或者使用更安全的方式（推荐）**：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && sudo chmod +x install.sh && sudo ./install.sh
+```
+
+这条命令会自动：
+- 下载安装脚本
+- 克隆项目代码
+- 安装所有依赖（Node.js、PM2、Go、pnpm）
+- 构建前端和后端
+- 启动服务
+- 配置开机自启
+
+### 一键安装脚本（本地使用）
 
 脚本会自动完成以下操作：
 - 检测并安装 Node.js、PM2、Go、pnpm
@@ -29,6 +44,14 @@ sudo ./install.sh
 # 快速启动服务
 ./quick_start.sh
 ```
+
+**或者使用一键启动命令（无需预先克隆代码）**：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
+```
+
+**注意**：这个命令需要在已克隆的项目目录中运行。
 
 ### 手动快速安装
 

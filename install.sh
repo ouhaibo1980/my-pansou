@@ -94,7 +94,7 @@ if [ -d "$PROJECT_DIR" ]; then
 else
     echo -e "${BLUE}📥 克隆项目代码...${NC}"
     cd "$(dirname "$PROJECT_DIR")"
-    git clone git@github.com:ouhaibo1980/my-pansou.git pansou
+    git clone https://github.com/ouhaibo1980/my-pansou.git pansou
     cd "$PROJECT_DIR"
 fi
 
