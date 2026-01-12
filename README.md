@@ -52,42 +52,13 @@ curl -s http://api.suxun.site/api/github
 - 原始：`https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh`
 - 使用代理：`https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh`
 
-**方式 3：使用 HTTP/SOCKS 代理（如果你有自己的代理服务器）**
 
-```bash
-# 使用 HTTP/HTTPS 代理
-curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
-
-# 或使用 SOCKS5 代理
-curl -fsSL --socks5 127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
-```
-
-**方式 4：使用环境变量配置代理**
-
-```bash
-# 设置代理环境变量
-export HTTP_PROXY=http://127.0.0.1:7890
-export HTTPS_PROXY=http://127.0.0.1:7890
-
-# 然后执行安装（脚本会自动使用环境变量中的代理）
-curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
-```
-
-**注意**：
-- 使用方式 3 或 4 时，将 `127.0.0.1:7890` 替换为你的代理地址和端口
-- 使用方式 2 的 GitHub 代理时，无需配置本地代理，直接使用即可
-
-**方式 3：先下载再执行（更安全）**
+**先下载再执行（更安全）**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && sudo chmod +x install.sh && sudo ./install.sh
 ```
 
-**带代理的方式 3**：
-
-```bash
-curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && sudo chmod +x install.sh && sudo ./install.sh
-```
 
 这条命令会自动：
 - 下载安装脚本
@@ -129,13 +100,9 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_st
 curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
 ```
 
-**使用 HTTP/SOCKS 代理**：
 
-```bash
-curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
-```
+**注意**：这个命令需要在已克隆的项目目录中运行。
 
-**注意**：这个命令需要在已克隆的项目目录中运行。将 `127.0.0.1:7890` 替换为你的代理地址和端口。
 
 ### 手动快速安装
 
