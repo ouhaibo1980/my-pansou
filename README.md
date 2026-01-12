@@ -78,6 +78,20 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 - 启动服务
 - 配置开机自启
 
+**自定义项目名称**
+
+你可以通过参数指定自定义的项目名称，PM2 进程名称会使用自定义名称：
+
+```bash
+# 方式 1：使用 --name 参数
+./install.sh --name="我的网盘搜索"
+
+# 方式 2：使用 ou 参数
+./install.sh ou="云盘搜"
+```
+
+如果不指定参数，默认项目名称为 "装歌盘搜"。
+
 ### 快速启动脚本
 
 适用于已下载项目代码的情况，快速启动服务。
@@ -85,6 +99,16 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 ```bash
 # 快速启动服务
 ./quick_start.sh
+```
+
+**自定义项目名称**
+
+```bash
+# 使用 --name 参数
+./quick_start.sh --name="我的网盘搜索"
+
+# 使用 ou 参数
+./quick_start.sh ou="云盘搜"
 ```
 
 **或者使用一键启动命令（无需预先克隆代码）**：
@@ -127,6 +151,10 @@ pm2 start ./pansou --name "pansou-backend"
 # 4. 设置开机自启
 pm2 save
 ```
+
+**自定义进程名称**：
+
+如果需要自定义 PM2 进程名称（例如：`my-search-frontend`、`my-search-backend`），修改上面的 `--name` 参数即可。
 
 ## 宝塔面板部署教程
 
@@ -186,7 +214,7 @@ pm2 start npm --name "pansou-frontend" -- start
 
 **PM2 启动参数说明：**
 - `npm` - 运行命令
-- `--name "pansou-frontend"` - 进程名称
+- `--name "pansou-frontend"` - 进程名称（可自定义，如 `"my-frontend"`）
 - `-- start` - 运行 npm start 命令
 
 #### 4. 部署后端
@@ -308,8 +336,28 @@ pm2 logs
 pm2 logs pansou-frontend
 pm2 logs pansou-backend
 
+# 如果使用了自定义名称，使用你的自定义名称
+pm2 logs my-frontend
+pm2 logs my-backend
+
 # 清空日志
 pm2 flush
+```
+
+#### Q: 如何使用自定义的项目名称？
+
+A: 在执行安装或启动脚本时，添加 `--name` 或 `ou` 参数：
+
+```bash
+# 一键安装时指定名称
+./install.sh --name="我的网盘搜索"
+
+# 快速启动时指定名称
+./quick_start.sh ou="云盘搜"
+
+# PM2 管理时使用对应的名称
+pm2 logs "我的网盘搜索-frontend"
+pm2 restart "云盘搜-backend"
 ```
 
 #### Q: 无法访问 GitHub 怎么办？
@@ -381,6 +429,10 @@ pm2 restart pansou-frontend
 
 # 重启后端
 pm2 restart pansou-backend
+
+# 如果使用了自定义名称
+pm2 restart "my-frontend"
+pm2 restart "my-backend"
 
 # 重启所有服务
 pm2 restart all

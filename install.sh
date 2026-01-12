@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 装歌盘搜 - 快速安装脚本
-# 使用方式：./install.sh
+# 使用方式：./install.sh --name="项目名称" 或 ./install.sh ou="项目名称"
 
 set -e
 
@@ -12,7 +12,8 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# 配置
+# 默认配置
+DEFAULT_PROJECT_NAME="装歌盘搜"
 PROJECT_DIR="/www/wwwroot/pansou"
 FRONTEND_PORT=3000
 BACKEND_PORT=8888
@@ -22,8 +23,27 @@ HTTP_PROXY="${HTTP_PROXY:-}"
 HTTPS_PROXY="${HTTPS_PROXY:-}"
 ALL_PROXY="${ALL_PROXY:-}"
 
+# 解析参数
+for arg in "$@"; do
+    case $arg in
+        --name=*|-n=*)
+            PROJECT_NAME="${arg#*=}"
+            shift
+            ;;
+        ou=*)
+            PROJECT_NAME="${arg#*=}"
+            shift
+            ;;
+        *)
+            ;;
+    esac
+done
+
+# 如果没有指定项目名称，使用默认值
+PROJECT_NAME="${PROJECT_NAME:-$DEFAULT_PROJECT_NAME}"
+
 echo "=========================================="
-echo "装歌盘搜 - 快速安装脚本"
+echo "$PROJECT_NAME - 快速安装脚本"
 echo "=========================================="
 echo ""
 
@@ -153,18 +173,18 @@ echo ""
 echo -e "${BLUE}🚀 启动服务...${NC}"
 
 # 停止旧进程（如果存在）
-pm2 delete pansou-frontend 2>/dev/null || true
-pm2 delete pansou-backend 2>/dev/null || true
+pm2 delete "${PROJECT_NAME}-frontend" 2>/dev/null || true
+pm2 delete "${PROJECT_NAME}-backend" 2>/dev/null || true
 
 # 启动前端
 echo "   - 启动前端..."
 cd frontend
-pm2 start npm --name "pansou-frontend" -- start
+pm2 start npm --name "${PROJECT_NAME}-frontend" -- start
 
 # 启动后端
 echo "   - 启动后端..."
 cd ..
-pm2 start ./pansou --name "pansou-backend"
+pm2 start ./pansou --name "${PROJECT_NAME}-backend"
 
 # 设置开机自启
 pm2 save

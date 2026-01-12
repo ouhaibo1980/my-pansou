@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 装歌盘搜 - 快速启动脚本
-# 使用方式：./quick_start.sh
+# 使用方式：./quick_start.sh --name="项目名称" 或 ./quick_start.sh ou="项目名称"
 
 set -e
 
@@ -12,8 +12,30 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# 默认配置
+DEFAULT_PROJECT_NAME="装歌盘搜"
+
+# 解析参数
+for arg in "$@"; do
+    case $arg in
+        --name=*|-n=*)
+            PROJECT_NAME="${arg#*=}"
+            shift
+            ;;
+        ou=*)
+            PROJECT_NAME="${arg#*=}"
+            shift
+            ;;
+        *)
+            ;;
+    esac
+done
+
+# 如果没有指定项目名称，使用默认值
+PROJECT_NAME="${PROJECT_NAME:-$DEFAULT_PROJECT_NAME}"
+
 echo "=========================================="
-echo "装歌盘搜 - 快速启动"
+echo "$PROJECT_NAME - 快速启动"
 echo "=========================================="
 echo ""
 
@@ -53,10 +75,10 @@ if [ ! -f "./pansou" ]; then
 fi
 
 # 停止旧进程
-pm2 delete pansou-backend 2>/dev/null || true
+pm2 delete "${PROJECT_NAME}-backend" 2>/dev/null || true
 
 # 启动后端
-pm2 start ./pansou --name "pansou-backend"
+pm2 start ./pansou --name "${PROJECT_NAME}-backend"
 echo -e "${GREEN}✅ 后端已启动${NC}"
 
 # 3. 启动前端
@@ -65,10 +87,10 @@ echo -e "${BLUE}🔧 启动前端...${NC}"
 cd frontend
 
 # 停止旧进程
-pm2 delete pansou-frontend 2>/dev/null || true
+pm2 delete "${PROJECT_NAME}-frontend" 2>/dev/null || true
 
 # 启动前端
-pm2 start npm --name "pansou-frontend" -- start
+pm2 start npm --name "${PROJECT_NAME}-frontend" -- start
 cd ..
 echo -e "${GREEN}✅ 前端已启动${NC}"
 
