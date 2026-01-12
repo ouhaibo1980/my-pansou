@@ -123,7 +123,7 @@ export default function Home() {
         <header className="text-center mb-12">
           <h1 className="text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
             <Globe className="w-12 h-12 text-purple-400" />
-            PanSou
+            装歌盘搜
           </h1>
           <p className="text-xl text-purple-200">高性能网盘资源搜索引擎</p>
         </header>

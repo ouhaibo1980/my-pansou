@@ -18,18 +18,18 @@ pids=$(ss -lptn 'sport = :8888' 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2
 sleep 2
 
 # 启动后端 API 服务
-echo "Starting PanSou API service on port 8888..."
+echo "Starting 装歌盘搜 API service on port 8888..."
 nohup ./pansou > /tmp/pansou.log 2>&1 &
 sleep 3
 
 # 检查后端是否启动成功
 if ! ss -tuln 2>/dev/null | grep -q ':8888.*LISTEN'; then
-  echo "ERROR: Failed to start PanSou API service"
+  echo "ERROR: Failed to start 装歌盘搜 API service"
   tail -20 /tmp/pansou.log
   exit 1
 fi
 
-echo "✅ PanSou API started on port 8888"
+echo "✅ 装歌盘搜 API started on port 8888"
 
 # 启动前端服务
 echo "Starting frontend on port 5000..."

@@ -72,7 +72,7 @@ ARG BUILD_DATE=unknown
 ARG VCS_REF=unknown
 
 # 添加镜像标签
-LABEL org.opencontainers.image.title="PanSou" \
+LABEL org.opencontainers.image.title="装歌盘搜" \
       org.opencontainers.image.description="高性能网盘资源搜索API服务" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.created="${BUILD_DATE}" \

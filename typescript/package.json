@@ -1,7 +1,7 @@
 {
   "name": "@pansou/mcp-server",
   "version": "1.0.0",
-  "description": "MCP server for PanSou netdisk search service",
+  "description": "MCP server for 装歌盘搜 netdisk search service",
   "main": "dist/index.js",
   "bin": {
     "pansou-mcp-server": "dist/index.js"
@@ -19,7 +19,7 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "pansou",
+    "装歌盘搜",
     "netdisk",
     "search",
     "claude"

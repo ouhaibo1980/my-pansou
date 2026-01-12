@@ -1,10 +1,10 @@
-# PanSou MCP 服务文档
+# 装歌盘搜 MCP 服务文档
 
 ## 功能介绍
 
-PanSou MCP 服务是一个基于 [Model Context Protocol (MCP)](https://modelcontextprotocol.io) 的工具服务，它将 PanSou 网盘搜索 API 的功能封装为可在支持 MCP 的客户端（如 Cherry Studio）中直接调用的工具。
+装歌盘搜 MCP 服务是一个基于 [Model Context Protocol (MCP)](https://modelcontextprotocol.io) 的工具服务，它将 装歌盘搜 网盘搜索 API 的功能封装为可在支持 MCP 的客户端（如 Cherry Studio）中直接调用的工具。
 
-通过 PanSou MCP 服务，可以直接在 Claude 等 AI 助手中搜索网盘资源，极大地提升了获取网盘资源的便捷性。
+通过 装歌盘搜 MCP 服务，可以直接在 Claude 等 AI 助手中搜索网盘资源，极大地提升了获取网盘资源的便捷性。
 
 ### 核心功能
 
@@ -18,11 +18,11 @@ PanSou MCP 服务是一个基于 [Model Context Protocol (MCP)](https://modelcon
    - 支持通过 `concurrency` 参数指定并发搜索数量。
 
 2. **检查服务健康状态 (`check_service_health`)**:
-   - 检查所连接的 PanSou 后端服务是否正常运行。
+   - 检查所连接的 装歌盘搜 后端服务是否正常运行。
    - 获取后端服务的配置信息，如可用的 Telegram 频道列表和插件列表。
 
 3. **启动后端服务 (`start_backend`)**:
-   - 自动启动本地的 PanSou Go 后端服务（如果尚未运行）。
+   - 自动启动本地的 装歌盘搜 Go 后端服务（如果尚未运行）。
    - 等待服务完全启动并可用后才开始处理其他请求。
    - 支持参数：`force_restart`（可选，布尔值，是否强制重启后端服务，默认为false）。
 
@@ -32,10 +32,10 @@ PanSou MCP 服务是一个基于 [Model Context Protocol (MCP)](https://modelcon
 
 ### 架构与部署方式
 
-PanSou MCP 服务设计为与 PanSou Go 后端服务分离，通过 HTTP API 进行通信。支持以下部署方式：
+装歌盘搜 MCP 服务设计为与 装歌盘搜 Go 后端服务分离，通过 HTTP API 进行通信。支持以下部署方式：
 
-- **Node.js 部署 (TypeScript)**: MCP 服务基于 TypeScript 开发，编译后通过 `node` 命令运行编译后的 JavaScript 文件。它会自动连接到指定的 PanSou 后端服务。
-- **Docker 部署**: 使用 Docker 容器运行 PanSou 后端服务，MCP 服务通过 HTTP API 连接到容器化的后端。
+- **Node.js 部署 (TypeScript)**: MCP 服务基于 TypeScript 开发，编译后通过 `node` 命令运行编译后的 JavaScript 文件。它会自动连接到指定的 装歌盘搜 后端服务。
+- **Docker 部署**: 使用 Docker 容器运行 装歌盘搜 后端服务，MCP 服务通过 HTTP API 连接到容器化的后端。
 
 ---
 

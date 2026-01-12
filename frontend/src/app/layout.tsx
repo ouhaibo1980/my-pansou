@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PanSou - 网盘资源搜索引擎",
+  title: "装歌盘搜 - 网盘资源搜索引擎",
   description: "高性能网盘资源搜索引擎，支持 77 个搜索源插件",
 };
 
