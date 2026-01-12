@@ -273,24 +273,41 @@ curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-
 
 ### 快速卸载脚本
 
-适用于需要卸载服务的情况，一键删除项目文件和配置。
+适用于需要卸载服务的情况，一键停止服务并清理文件。
 
 ```bash
-# 快速卸载服务
+# 快速卸载服务（停止 PM2 进程，保留源代码和依赖）
 ./uninstall.sh
 ```
 
 **卸载内容**：
-- 停止并删除 PM2 进程（${PROJECT_NAME}-frontend, ${PROJECT_NAME}-backend）
-- 删除项目目录（/www/wwwroot/pansou）
-- 可选：删除 PM2 配置
-- 可选：卸载依赖软件（Node.js/Go/pnpm）
+- ✓ 停止并删除 PM2 进程（${PROJECT_NAME}-frontend, ${PROJECT_NAME}-backend）
+- ✓ 移除 PM2 开机自启配置
 
 **使用 GitHub 代理下载卸载脚本**：
 
 ```bash
 curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/uninstall.sh -o uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh
 ```
+
+**完全清理（包括所有生成文件）**：
+
+```bash
+# 停止服务并清理所有生成文件（node_modules、.next、pansou 二进制文件等）
+./uninstall.sh --clean
+
+# 或使用简写
+./uninstall.sh -c
+```
+
+**完全清理内容**：
+- ✓ 停止并删除 PM2 进程
+- ✓ 移除 PM2 开机自启配置
+- ✓ 清理 node_modules 依赖目录
+- ✓ 清理 .next 构建文件
+- ✓ 删除 pansou 二进制文件
+- ✓ 清理 cache 缓存目录
+- ✓ 清理 package-lock.json、pnpm-lock.yaml
 
 **卸载自定义名称实例**：
 
@@ -300,11 +317,34 @@ curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-
 
 # 使用 ou 参数
 ./uninstall.sh ou="云盘搜"
+
+# 完全清理自定义名称实例
+./uninstall.sh --name="我的网盘搜索" --clean
+```
+
+**查看帮助信息**：
+
+```bash
+./uninstall.sh --help
 ```
 
 **卸载确认**：
 
-脚本会提示确认卸载操作，需要输入 `yes` 或 `y` 才能继续。
+脚本会提示确认卸载操作，需要输入 `y` 才能继续。
+
+**重新安装**：
+
+卸载后，源代码和配置文件已保留，可以直接运行：
+
+```bash
+./quick_start.sh
+```
+
+重新启动服务。如需完全重新安装，可以运行：
+
+```bash
+./install.sh
+```
 
 ### 手动快速安装
 
