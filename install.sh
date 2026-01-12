@@ -84,6 +84,7 @@ fi
 # 配置 Go 使用国内代理
 echo "   - 配置 Go 国内代理..."
 export GOPROXY=https://goproxy.cn,direct
+echo 'export GOPROXY=https://goproxy.cn,direct' >> /etc/profile
 
 echo -e "${GREEN}✅ 镜像源配置完成${NC}"
 
@@ -92,18 +93,55 @@ echo ""
 echo -e "${BLUE}📦 检测 Node.js...${NC}"
 if ! command -v node &> /dev/null; then
     echo -e "${YELLOW}⚠️  未检测到 Node.js，正在安装...${NC}"
-    if [ "$BT_INSTALLED" = true ]; then
-        # 宝塔方式安装
-        bt install pm2_manager
-    else
-        # 通用方式安装
-        curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-        apt-get install -y nodejs
-        npm install -g pm2
-    fi
-fi
-echo -e "${GREEN}✅ Node.js 已安装${NC}"
 
+    # 检测 Linux 发行版
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        OS=$ID
+    else
+        OS=$(uname -s)
+    fi
+
+    echo "   - 检测到系统: $OS"
+
+    case $OS in
+        ubuntu|debian)
+            echo "   - 使用 NodeSource 安装 Node.js 18.x..."
+            curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+            apt-get install -y nodejs
+            ;;
+        centos|rhel|rocky|almalinux)
+            echo "   - 使用 NodeSource 安装 Node.js 18.x..."
+            curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
+            yum install -y nodejs
+            ;;
+        opencloudos|anolis|kylin)
+            echo "   - 使用 NodeSource 安装 Node.js 18.x..."
+            curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
+            yum install -y nodejs
+            ;;
+        *)
+            echo "   - 使用通用方式安装 Node.js..."
+            # 尝试使用 nvm 安装
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install 18
+            nvm use 18
+            nvm alias default 18
+            ;;
+    esac
+fi
+
+if ! command -v node &> /dev/null; then
+    echo -e "${RED}❌ Node.js 安装失败，请手动安装${NC}"
+    echo "   参考文档: https://nodejs.org/"
+    exit 1
+fi
+
+echo -e "${GREEN}✅ Node.js 已安装 (版本: $(node -v))${NC}"
+
+# 安装 PM2
 if ! command -v pm2 &> /dev/null; then
     echo -e "${YELLOW}⚠️  未检测到 PM2，正在安装...${NC}"
     npm install -g pm2
