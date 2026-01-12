@@ -72,16 +72,40 @@ fi
 echo ""
 echo -e "${BLUE}⚙️  配置国内镜像源...${NC}"
 
-# 配置 npm 使用淘宝镜像
-echo "   - 配置 npm 淘宝镜像..."
-if command -v npm &> /dev/null; then
-    npm config set registry https://registry.npmmirror.com
+# 检测现有 Node.js 是否能正常运行（避免 glibc 不兼容错误）
+NEED_REINSTALL_NODE=false
+if command -v node &> /dev/null; then
+    echo "   - 检测现有 Node.js 版本..."
+    # 捕获 node 命令的错误输出
+    if ! node_version_output=$(node --version 2>&1) > /dev/null; then
+        echo -e "${RED}❌ 现有 Node.js 版本与系统不兼容，将在后续步骤中重新安装${NC}"
+        echo "   错误信息: $node_version_output"
+        # 标记需要重新安装 Node.js
+        NEED_REINSTALL_NODE=true
+    else
+        echo -e "${GREEN}✅ 现有 Node.js 可用: $(node --version)${NC}"
+        NEED_REINSTALL_NODE=false
+    fi
 fi
 
-# 配置 pnpm 使用淘宝镜像
-echo "   - 配置 pnpm 淘宝镜像..."
-if command -v pnpm &> /dev/null; then
-    pnpm config set registry https://registry.npmmirror.com
+# 只有在 Node.js 正常的情况下才配置 npm/pnpm 镜像
+if [ "$NEED_REINSTALL_NODE" = false ] && command -v npm &> /dev/null; then
+    # 先验证 npm 是否能正常工作
+    if npm --version &> /dev/null; then
+        # 配置 npm 使用淘宝镜像
+        echo "   - 配置 npm 淘宝镜像..."
+        npm config set registry https://registry.npmmirror.com
+
+        # 配置 pnpm 使用淘宝镜像
+        echo "   - 配置 pnpm 淘宝镜像..."
+        if command -v pnpm &> /dev/null; then
+            pnpm config set registry https://registry.npmmirror.com
+        fi
+    else
+        echo -e "${YELLOW}⚠️  npm 命令无法正常工作，跳过镜像配置${NC}"
+    fi
+else
+    echo "   - 跳过 npm/pnpm 镜像配置（Node.js 需要重新安装）"
 fi
 
 # 配置 Go 使用国内代理
@@ -94,8 +118,31 @@ echo -e "${GREEN}✅ 镜像源配置完成${NC}"
 # 2. 检测并安装 Node.js 和 PM2
 echo ""
 echo -e "${BLUE}📦 检测 Node.js...${NC}"
-if ! command -v node &> /dev/null; then
-    echo -e "${YELLOW}⚠️  未检测到 Node.js，正在安装...${NC}"
+
+# 如果现有 Node.js 不兼容，强制重新安装
+if [ "$NEED_REINSTALL_NODE" = true ]; then
+    echo -e "${YELLOW}⚠️  现有 Node.js 与系统不兼容，强制重新安装${NC}"
+    FORCE_INSTALL_NODE=true
+else
+    FORCE_INSTALL_NODE=false
+fi
+
+# 当检测不到 Node.js 或需要强制重新安装时
+if ! command -v node &> /dev/null || [ "$FORCE_INSTALL_NODE" = true ]; then
+    echo -e "${YELLOW}⚠️  正在安装/重新安装 Node.js...${NC}"
+
+    # 如果需要强制重新安装，先清理旧的 Node.js
+    if [ "$FORCE_INSTALL_NODE" = true ]; then
+        echo "   - 清理旧的 Node.js 安装..."
+        # 删除可能存在的 Node.js 安装目录
+        rm -rf /usr/local/nodejs*
+        rm -rf /usr/local/lib/node*
+        rm -rf /usr/local/include/node*
+        rm -rf /usr/local/share/man/man1/node*
+        # 删除符号链接
+        rm -f /usr/bin/node /usr/bin/npm /usr/bin/npx
+        rm -f /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
+    fi
 
     # 检测 Linux 发行版
     if [ -f /etc/os-release ]; then
@@ -161,7 +208,17 @@ if ! command -v node &> /dev/null; then
     exit 1
 fi
 
+# 刷新环境变量，确保新安装的 Node.js 可用
+export PATH=/usr/local/bin:$PATH
+
 echo -e "${GREEN}✅ Node.js 已安装 (版本: $(node -v))${NC}"
+
+# 验证 npm 是否可用
+if ! command -v npm &> /dev/null || ! npm --version &> /dev/null; then
+    echo -e "${RED}❌ npm 命令不可用，请检查 Node.js 安装${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✅ npm 可用 (版本: $(npm --version))${NC}"
 
 # 安装 PM2
 if ! command -v pm2 &> /dev/null; then

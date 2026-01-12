@@ -629,6 +629,82 @@ npm config set registry https://registry.npmmirror.com
 pnpm config set registry https://registry.npmmirror.com
 ```
 
+#### Q: 安装时报错 GLIBC_2.27 not found 或 GLIBCXX_3.4.20 not found 怎么办？
+
+A: 这是 Node.js 版本与系统不兼容导致的，常见于 CentOS 7 等旧系统。
+
+**错误示例：**
+```
+node: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by node)
+node: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by node)
+```
+
+**原因：**
+- 系统已安装了高版本的 Node.js（如 18.x 或 20.x），但系统的 glibc 版本过低（CentOS 7 为 glibc 2.17）
+- 脚本检测到 Node.js 命令存在，但在执行时报错
+
+**解决方案：**
+
+**方法 1：使用最新版本的安装脚本（推荐）**
+
+最新版本的 install.sh（v1.2.5+）已修复此问题，会自动：
+- 检测 Node.js 是否真正可用
+- 发现不兼容时自动清理旧版本
+- 重新安装兼容的 Node.js 16.20.2
+
+```bash
+# 重新下载并执行安装
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
+
+**方法 2：手动清理并重新安装**
+
+如果脚本自动处理失败，可以手动清理：
+
+```bash
+# 1. 停止相关服务
+pm2 stop all
+
+# 2. 删除旧的 Node.js 安装
+sudo rm -rf /usr/local/nodejs*
+sudo rm -rf /usr/local/lib/node*
+sudo rm -rf /usr/local/include/node*
+sudo rm -f /usr/bin/node /usr/bin/npm /usr/bin/npx
+sudo rm -f /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
+
+# 3. 重新运行安装脚本
+sudo ./install.sh ou="装歌盘搜"
+```
+
+**方法 3：手动安装兼容版本**
+
+如果以上方法都失败，可以手动安装 Node.js 16.20.2：
+
+```bash
+# 下载 Node.js 16.20.2（兼容 glibc 2.17）
+wget https://nodejs.org/dist/v16.20.2/node-v16.20.2-linux-x64.tar.xz
+
+# 解压并安装
+sudo tar -xf node-v16.20.2-linux-x64.tar.xz -C /usr/local --strip-components=1
+
+# 创建符号链接
+sudo ln -sf /usr/local/bin/node /usr/bin/node
+sudo ln -sf /usr/local/bin/npm /usr/bin/npm
+sudo ln -sf /usr/local/bin/npx /usr/bin/npx
+
+# 验证安装
+node -v  # 应该输出 v16.20.2
+npm -v
+
+# 清理下载文件
+rm node-v16.20.2-linux-x64.tar.xz
+```
+
+**注意**：
+- CentOS 7、OpenCloudOS、麒麟系统等旧系统需要使用 Node.js 16.20.2
+- Ubuntu 20.04+、CentOS 8+ 等新系统可以使用 Node.js 18 或 20
+- 脚本已自动处理此问题，通常无需手动干预
+
 #### Q: 安装时报错 "不支持的指令" 或 "npm: command not found" 怎么办？
 
 A: 这是宝塔面板安装命令不支持导致的，脚本已修复，支持多种 Linux 发行版：
