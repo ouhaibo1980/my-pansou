@@ -431,27 +431,26 @@ pm2 start go run --name "pansou-backend" -- main.go
 3. 提交后点击 **设置**
 4. 选择 **配置文件** 选项卡
 
-将以下配置粘贴到 `location /` 之前：
+将以下配置粘贴到 `location /` 之前（替换原有的 location / 块）：
 
 ```nginx
-# 前端代理
+# 前端代理（前端包含 API 代理，会自动转发到后端）
 location / {
     proxy_pass http://127.0.0.1:3000;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
-}
-
-# 后端 API 代理
-location /api {
-    proxy_pass http://127.0.0.1:8888;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
 }
 ```
+
+**重要说明**：
+- 前端（Next.js）已经内置了 API 代理，会自动将 `/api/search` 请求转发到后端
+- 不需要在 Nginx 中配置 `/api` 的代理规则
+- 如果配置了 `/api` 代理，可能会与前端 API 代理冲突
 
 点击 **保存**，Nginx 会自动重载配置。
 
@@ -483,6 +482,39 @@ pm2 startup
 按照提示执行输出的命令即可。
 
 ### 常见问题
+
+#### Q: 域名访问后搜索功能无法使用？
+
+A: 请检查以下几点：
+
+1. **Nginx 配置**：确保只配置了 `/` 的代理，不要配置 `/api` 的代理（前端已有内置 API 代理）
+   ```nginx
+   location / {
+       proxy_pass http://127.0.0.1:3000;
+       proxy_set_header Host $host;
+       proxy_set_header X-Real-IP $remote_addr;
+       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       proxy_set_header X-Forwarded-Proto $scheme;
+       proxy_http_version 1.1;
+       proxy_set_header Upgrade $http_upgrade;
+       proxy_set_header Connection "upgrade";
+   }
+   ```
+
+2. **PM2 进程状态**：确保前后端进程都在运行
+   ```bash
+   pm2 list
+   ```
+
+3. **前端 API 日志**：查看前端日志，确认 API 请求是否正常
+   ```bash
+   pm2 logs 装歌盘搜-frontend
+   ```
+
+4. **后端服务状态**：确保后端服务正常监听 8888 端口
+   ```bash
+   curl http://localhost:8888/api/search?kw=test
+   ```
 
 #### Q: PM2 命令找不到？
 
