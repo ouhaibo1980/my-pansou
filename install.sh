@@ -196,14 +196,14 @@ if ! command -v go &> /dev/null; then
 fi
 echo -e "${GREEN}✅ Go 已安装${NC}"
 
-# 4. 检测并安装 pnpm
+# 4. 检测并安装依赖（使用 npm）
 echo ""
-echo -e "${BLUE}📦 检测 pnpm...${NC}"
-if ! command -v pnpm &> /dev/null; then
-    echo -e "${YELLOW}⚠️  未检测到 pnpm，正在安装...${NC}"
-    npm install -g pnpm
+echo -e "${BLUE}📦 检测 npm...${NC}"
+if ! command -v npm &> /dev/null; then
+    echo -e "${RED}❌ npm 未安装，请先安装 Node.js${NC}"
+    exit 1
 fi
-echo -e "${GREEN}✅ pnpm 已安装${NC}"
+echo -e "${GREEN}✅ npm 已就绪 (版本: $(npm -v))${NC}"
 
 # 5. 创建项目目录
 echo ""
@@ -262,7 +262,17 @@ echo -e "${GREEN}✅ 前端安装完成${NC}"
 # 7. 安装后端
 echo ""
 echo -e "${BLUE}🔧 安装后端...${NC}"
-cd ..
+cd "$PROJECT_DIR"
+
+# 检查 go.mod 文件是否存在
+if [ ! -f "go.mod" ]; then
+    echo -e "${RED}❌ 错误：未找到 go.mod 文件${NC}"
+    echo -e "${RED}   当前目录：$(pwd)${NC}"
+    echo -e "${RED}   项目目录：$PROJECT_DIR${NC}"
+    echo -e "${YELLOW}   请确保在项目根目录下运行此脚本${NC}"
+    exit 1
+fi
+
 echo "   - 下载 Go 依赖..."
 
 # 配置 Go 代理（国内用户推荐）
@@ -286,20 +296,13 @@ pm2 delete "${PROJECT_NAME}-backend" 2>/dev/null || true
 
 # 启动前端
 echo "   - 启动前端..."
-cd frontend
+cd "$PROJECT_DIR/frontend"
 pm2 start npm --name "${PROJECT_NAME}-frontend" -- start
 
 # 启动后端（启用所有搜索插件）
 echo "   - 启动后端..."
-cd ..
-ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj" ENV=production PORT=8888 pm2 start ./pansou --name "${PROJECT_NAME}-backend}"
-
-# 设置开机自启
-pm2 save
-
-echo -e "${GREEN}✅ 服务已启动${NC}"
-
-# 9. 配置 Nginx（如果是宝塔）
+cd "$PROJECT_DIR"
+ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj" ENV=production PORT=$BACKEND_PORT pm2 start ./pansou --name "${PROJECT_NAME}-backend}"
 if [ "$BT_INSTALLED" = true ]; then
     echo ""
     echo -e "${BLUE}⚙️  配置 Nginx...${NC}"
@@ -318,7 +321,7 @@ if [ "$BT_INSTALLED" = true ]; then
     echo "   后端 API 代理配置："
     echo ""
     echo "   location /api {"
-    echo "       proxy_pass http://127.0.0.1:8888;"
+    echo "       proxy_pass http://127.0.0.1:6000;"
     echo "       proxy_set_header Host \$host;"
     echo "       proxy_set_header X-Real-IP \$remote_addr;"
     echo "       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;"

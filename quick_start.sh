@@ -76,6 +76,18 @@ echo -e "${GREEN}✅ 镜像源配置完成${NC}"
 echo ""
 echo -e "${BLUE}🔧 启动后端...${NC}"
 
+# 确保在项目根目录
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR"
+
+# 检查 go.mod 文件是否存在
+if [ ! -f "go.mod" ]; then
+    echo -e "${RED}❌ 错误：未找到 go.mod 文件${NC}"
+    echo -e "${RED}   当前目录：$(pwd)${NC}"
+    echo -e "${YELLOW}   请确保在项目根目录下运行此脚本${NC}"
+    exit 1
+fi
+
 if [ ! -f "./pansou" ]; then
     echo -e "${YELLOW}⚠️  后端二进制文件不存在，正在编译...${NC}"
     go build -o pansou main.go
@@ -104,7 +116,7 @@ pm2 delete "${PROJECT_NAME}-frontend" 2>/dev/null || true
 
 # 启动前端
 pm2 start npm --name "${PROJECT_NAME}-frontend" -- start
-cd ..
+cd "$SCRIPT_DIR"
 echo -e "${GREEN}✅ 前端已启动${NC}"
 
 # 4. 设置开机自启
