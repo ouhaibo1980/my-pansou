@@ -98,6 +98,79 @@ GET http://localhost:8888/api/health
   }
 }
 ```
+}
+```
+
+## Docker 一键启动
+
+项目提供了 Docker 一键启动方案，开箱即用，无需手动安装依赖。
+
+### 前置要求
+
+- Docker 已安装
+- Docker Compose 已安装（Docker Desktop 自带）
+
+### 一键启动
+
+```bash
+# 启动服务（前端 + 后端）
+./start_docker.sh
+```
+
+脚本会自动：
+- 创建前端 Dockerfile
+- 配置 docker-compose.yml
+- 构建并启动前端和后端容器
+- 配置网络和数据卷
+
+### 访问地址
+
+- **Web 前端**: http://localhost:5000
+- **API 服务**: http://localhost:8888/api
+- **健康检查**: http://localhost:8888/api/health
+
+### 管理命令
+
+```bash
+# 停止服务
+./stop_docker.sh
+
+# 重启服务
+./restart_docker.sh
+
+# 查看日志
+docker-compose -p pansou logs -f
+
+# 查看服务状态
+docker-compose -p pansou ps
+```
+
+### 快速开始（仅需 3 步）
+
+```bash
+# 1. 克隆仓库
+git clone git@github.com:ouhaibo1980/my-pansou.git
+cd my-pansou
+
+# 2. 一键启动
+./start_docker.sh
+
+# 3. 访问应用
+# 打开浏览器访问：http://localhost:5000
+```
+
+### 容器说明
+
+- **pansou-backend**: 后端 API 服务，运行在 8888 端口
+- **pansou-frontend**: Next.js 前端服务，运行在 5000 端口
+- **pansou-cache**: 数据卷，用于缓存搜索结果
+
+### 端口说明
+
+- 容器内部：前端 3000 端口，后端 8888 端口
+- 主机映射：前端 5000 端口，后端 8888 端口
+
+如需修改端口，编辑 `docker-compose.yml` 中的 `ports` 配置。
 
 ## 自动同步到 GitHub
 
