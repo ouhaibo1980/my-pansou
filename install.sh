@@ -242,7 +242,6 @@ echo -e "${BLUE}⚙️  生成前端配置...${NC}"
 echo "   - 项目名称: $PROJECT_NAME"
 cat > frontend/.env.local << EOF
 NEXT_PUBLIC_APP_NAME=$PROJECT_NAME
-NEXT_PUBLIC_BACKEND_URL=http://localhost:${BACKEND_PORT}
 EOF
 echo -e "${GREEN}✅ 前端配置已生成${NC}"
 

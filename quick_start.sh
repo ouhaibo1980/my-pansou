@@ -97,7 +97,6 @@ cd frontend
 echo "   - 项目名称: $PROJECT_NAME"
 cat > .env.local << EOF
 NEXT_PUBLIC_APP_NAME=$PROJECT_NAME
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8888
 EOF
 
 # 停止旧进程

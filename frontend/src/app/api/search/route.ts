@@ -17,10 +17,14 @@ export async function GET(request: NextRequest) {
 
     console.log(`[API Search] Searching for: ${keyword}`);
 
-    // 代理请求到后端 API（后端期望的参数名是 kw，不是 keyword）
-    // 添加 refresh=true 参数，确保获取最新搜索结果
-    const backendUrl = `http://localhost:8888/api/search?kw=${encodeURIComponent(keyword)}&refresh=true`;
-    
+    // 根据当前请求动态构建后端 URL
+    const protocol = request.headers.get('x-forwarded-proto') || request.nextUrl.protocol.replace(':', '');
+    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'localhost:5000';
+
+    // 构建后端 URL：使用相同的域名和协议，但端口改为 8888
+    const backendHost = host.replace(/:\d+$/, ':8888');
+    const backendUrl = `${protocol}://${backendHost}/api/search?kw=${encodeURIComponent(keyword)}&refresh=true`;
+
     console.log(`[API Search] Backend URL: ${backendUrl}`);
     
     // 创建超时控制器
