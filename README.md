@@ -4,60 +4,63 @@
 
 ## 快速开始
 
-### 前后端集成版
+### 使用 Docker 部署
 
-#### 直接使用 Docker 命令
-
-一键启动，开箱即用：
+#### 克隆仓库并启动
 
 ```bash
-docker run -d --name pansou \
-  -p 5000:5000 \
-  ghcr.io/fish2018/pansou:latest
+# 克隆仓库
+git clone git@github.com:ouhaibo1980/my-pansou.git
+cd my-pansou
+
+# 一键启动
+./start_docker.sh
 ```
 
-**注意**：此命令仅启动后端 API 服务，如需完整的前端界面，请使用 Docker Compose 方式。
-
-#### 使用 Docker Compose（推荐）
-
-##### 下载配置文件
+#### 或直接使用 Docker Compose
 
 ```bash
-curl -o docker-compose.yml https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/docker-compose.simple.yml
-```
+# 克隆仓库
+git clone git@github.com:ouhaibo1980/my-pansou.git
+cd my-pansou
 
-##### 一键启动
-
-```bash
+# 启动服务
 docker-compose up -d
 ```
 
 启动后访问：http://localhost:5000
 
-##### 管理命令
+#### 管理命令
 
 ```bash
 # 停止服务
-docker-compose down
+./stop_docker.sh
 
 # 重启服务
-docker-compose restart
+./restart_docker.sh
 
 # 查看日志
-docker-compose logs -f
+docker-compose -p pansou logs -f
+
+# 查看服务状态
+docker-compose -p pansou ps
 ```
 
-### 使用源码构建
-
-如果你已经克隆了仓库，可以使用本地代码构建：
+### 使用本地代码构建
 
 ```bash
+# 克隆仓库
+git clone git@github.com:ouhaibo1980/my-pansou.git
+cd my-pansou
+
 # 构建镜像
 docker build -t pansou-local .
 
 # 运行容器
 docker run -d --name pansou -p 5000:5000 pansou-local
 ```
+
+启动后访问：http://localhost:5000
 
 ## 功能特性
 
@@ -120,7 +123,10 @@ GET http://localhost:5000/api/health
 ├── pansou            # Go 后端二进制文件
 ├── cache/            # 缓存目录
 ├── Dockerfile        # Docker 镜像构建文件
-├── docker-compose.simple.yml  # Docker Compose 简化配置
+├── docker-compose.yml  # Docker Compose 配置
+├── start_docker.sh   # 一键启动脚本
+├── stop_docker.sh    # 停止脚本
+├── restart_docker.sh # 重启脚本
 └── .coze            # 项目配置
 ```
 
@@ -176,7 +182,6 @@ GET http://localhost:5000/api/health
 ```
 
 脚本会自动：
-- 创建前端 Dockerfile
 - 配置 docker-compose.yml
 - 构建并启动前端和后端容器
 - 配置网络和数据卷
@@ -251,4 +256,4 @@ docker-compose -p pansou ps
 
 ## 原项目地址
 
-- [PanSou](https://github.com/ouhaibo1980/pansou) - 网盘搜索 API
+- [PanSou](https://github.com/fish2018/pansou) - 网盘搜索 API
