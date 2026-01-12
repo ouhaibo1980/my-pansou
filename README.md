@@ -123,17 +123,27 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 
 **推荐的 GitHub 代理：**
 
+**代理 1：https://gh.ddlc.top（推荐，延迟低）**
+
 ```bash
-# 代理 1：https://gh.ddlc.top（推荐，延迟低）
 curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
 
-# 代理 2：http://gh.927223.xyz（速度快）
+**代理 2：http://gh.927223.xyz（速度快）**
+
+```bash
 curl -fsSL http://gh.927223.xyz/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
 
-# 代理 3：https://gh.felicity.ac.cn（稳定）
+**代理 3：https://gh.felicity.ac.cn（稳定）**
+
+```bash
 curl -fsSL https://gh.felicity.ac.cn/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
 
-# 代理 4：https://gh-proxy.com（常用）
+**代理 4：https://gh-proxy.com（常用）**
+
+```bash
 curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
 ```
 
