@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 快速升级 Node.js 到 20.x 的脚本
+# 快速升级 Node.js 到 18.20.4 的脚本
 # 使用方式：sudo ./upgrade_nodejs.sh
 
 set -e
@@ -12,8 +12,11 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# 固定 Node.js 版本
+NODE_VERSION_FULL="18.20.4"
+
 echo "=========================================="
-echo "Node.js 快速升级工具"
+echo "Node.js 快速升级工具（统一版本：18.20.4）"
 echo "=========================================="
 echo ""
 
@@ -53,7 +56,7 @@ echo -e "${BLUE}检测到系统: $OS${NC}"
 echo ""
 
 # 询问确认
-echo -e "${YELLOW}⚠️  即将卸载当前的 Node.js $CURRENT_VERSION 并安装 Node.js 20.x${NC}"
+echo -e "${YELLOW}⚠️  即将卸载当前的 Node.js $CURRENT_VERSION 并安装 Node.js ${NODE_VERSION_FULL}${NC}"
 echo ""
 read -p "确定要继续吗？(yes/no): " confirm
 
@@ -92,23 +95,13 @@ esac
 
 echo -e "${GREEN}✅ 旧版本已卸载${NC}"
 
-# 安装 Node.js 20.x
+# 安装 Node.js 18.20.4
 echo ""
-echo -e "${BLUE}📦 安装 Node.js 20.x...${NC}"
+echo -e "${BLUE}📦 安装 Node.js ${NODE_VERSION_FULL}...${NC}"
 
 case $OS in
-    ubuntu|debian)
-        echo "   - 使用 NodeSource 安装 Node.js 20.x..."
-        curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-        apt-get install -y nodejs
-        ;;
-    centos|rhel|rocky|almalinux)
-        echo "   - 使用 NodeSource 安装 Node.js 20.x..."
-        curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
-        yum install -y nodejs
-        ;;
-    opencloudos|anolis|kylin)
-        echo "   - 使用官方二进制包安装 Node.js 20.x..."
+    ubuntu|debian|centos|rhel|rocky|almalinux|opencloudos|anolis|kylin)
+        echo "   - 使用官方二进制包安装 Node.js ${NODE_VERSION_FULL}..."
         # 检测系统架构
         ARCH=$(uname -m)
         if [ "$ARCH" = "x86_64" ]; then
@@ -119,17 +112,16 @@ case $OS in
             NODE_ARCH="x64"
         fi
 
-        # 下载 Node.js 20.x 二进制包
-        NODE_VERSION="20.18.0"
-        NODE_TARBALL="node-v${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz"
+        # 下载 Node.js 二进制包
+        NODE_TARBALL="node-v${NODE_VERSION_FULL}-linux-${NODE_ARCH}.tar.xz"
 
-        echo "   - 正在下载 Node.js ${NODE_VERSION}..."
-        if ! wget -O /tmp/${NODE_TARBALL} https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TARBALL} --timeout=30; then
+        echo "   - 正在下载 Node.js ${NODE_VERSION_FULL}..."
+        if ! wget -O /tmp/${NODE_TARBALL} https://nodejs.org/dist/v${NODE_VERSION_FULL}/${NODE_TARBALL} --timeout=30; then
             echo "   - 官方源下载失败，尝试从国内镜像下载..."
             # 尝试从腾讯云镜像下载
-            wget -O /tmp/${NODE_TARBALL} https://mirrors.cloud.tencent.com/nodejs-release/v${NODE_VERSION}/${NODE_TARBALL} || \
+            wget -O /tmp/${NODE_TARBALL} https://mirrors.cloud.tencent.com/nodejs-release/v${NODE_VERSION_FULL}/${NODE_TARBALL} || \
             # 尝试从阿里云镜像下载
-            wget -O /tmp/${NODE_TARBALL} https://mirrors.aliyun.com/nodejs-release/v${NODE_VERSION}/${NODE_TARBALL} || {
+            wget -O /tmp/${NODE_TARBALL} https://mirrors.aliyun.com/nodejs-release/v${NODE_VERSION_FULL}/${NODE_TARBALL} || {
                 echo -e "${RED}❌ Node.js 下载失败${NC}"
                 exit 1
             }
@@ -143,16 +135,36 @@ case $OS in
         rm /tmp/${NODE_TARBALL}
         ;;
     *)
-        echo "   - 使用 nvm 安装 Node.js 20.x..."
-        if ! command -v nvm &> /dev/null; then
-            echo "   - 安装 nvm..."
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        echo "   - 使用官方二进制包安装 Node.js ${NODE_VERSION_FULL}..."
+        # 检测系统架构
+        ARCH=$(uname -m)
+        if [ "$ARCH" = "x86_64" ]; then
+            NODE_ARCH="x64"
+        elif [ "$ARCH" = "aarch64" ]; then
+            NODE_ARCH="arm64"
+        else
+            NODE_ARCH="x64"
         fi
-        nvm install 20
-        nvm use 20
-        nvm alias default 20
+
+        # 下载 Node.js 二进制包
+        NODE_TARBALL="node-v${NODE_VERSION_FULL}-linux-${NODE_ARCH}.tar.xz"
+
+        echo "   - 正在下载 Node.js ${NODE_VERSION_FULL}..."
+        if ! wget -O /tmp/${NODE_TARBALL} https://nodejs.org/dist/v${NODE_VERSION_FULL}/${NODE_TARBALL} --timeout=30; then
+            echo "   - 官方源下载失败，尝试从国内镜像下载..."
+            wget -O /tmp/${NODE_TARBALL} https://mirrors.cloud.tencent.com/nodejs-release/v${NODE_VERSION_FULL}/${NODE_TARBALL} || \
+            wget -O /tmp/${NODE_TARBALL} https://mirrors.aliyun.com/nodejs-release/v${NODE_VERSION_FULL}/${NODE_TARBALL} || {
+                echo -e "${RED}❌ Node.js 下载失败${NC}"
+                exit 1
+            }
+        fi
+
+        # 解压并安装
+        tar -xf /tmp/${NODE_TARBALL} -C /usr/local --strip-components=1
+        ln -sf /usr/local/bin/node /usr/bin/node
+        ln -sf /usr/local/bin/npm /usr/bin/npm
+        ln -sf /usr/local/bin/npx /usr/bin/npx
+        rm /tmp/${NODE_TARBALL}
         ;;
 esac
 
@@ -161,6 +173,10 @@ echo ""
 echo -e "${BLUE}🔍 验证安装...${NC}"
 NEW_VERSION=$(node -v)
 echo -e "${GREEN}✅ Node.js 已升级到: $NEW_VERSION${NC}"
+
+if [ "$NEW_VERSION" != "v${NODE_VERSION_FULL}" ]; then
+    echo -e "${YELLOW}⚠️  版本不一致，期望: v${NODE_VERSION_FULL}，实际: $NEW_VERSION${NC}"
+fi
 
 # 重新安装 PM2
 echo ""

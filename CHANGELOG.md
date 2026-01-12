@@ -1,5 +1,40 @@
 # 更新日志
 
+## [1.2.3] - 2024-01-12
+
+### 重要更新
+
+- **统一使用 Node.js 18.20.4，兼容所有 Linux 系统**
+- **移除智能版本选择逻辑，简化安装流程**
+
+### 改进
+
+- **统一版本管理**：所有系统统一使用 Node.js 18.20.4，不再区分新旧系统
+- **简化安装流程**：移除 --node-version 参数和智能版本选择逻辑
+- **优化兼容性**：官方二进制包方式安装，兼容所有 Linux 发行版（包括 CentOS 7）
+- **统一升级方式**：upgrade_nodejs.sh 统一升级到 18.20.4
+
+### 脚本更新
+
+- `install.sh`：移除智能版本选择，统一使用 18.20.4
+- `upgrade_nodejs.sh`：改为升级到 18.20.4（原为 20.x）
+- 移除 pnpm install --silent 和 pnpm build --silent 中的 --silent 选项
+
+### 文档更新
+
+- 更新 `README.md`：移除"智能版本选择"章节
+- 更新 `README.md`：明确说明统一使用 Node.js 18.20.4
+- 更新 `NETWORK_ISSUE.md`：移除"glibc 版本不兼容"错误说明
+- 更新 `NETWORK_ISSUE.md`：移除"Node.js 版本不兼容"错误说明
+
+### 技术细节
+
+- Node.js 版本：固定为 18.20.4（支持所有系统）
+- Next.js 版本：15.0.4（兼容 Node.js >= 18.18.0）
+- React 版本：18.3.1
+- 安装方式：统一使用官方二进制包
+- 系统支持：Ubuntu/Debian/CentOS/RHEL/Rocky/AlmaLinux/OpenCloudOS/AnolisOS/麒麟/其他
+
 ## [1.2.2] - 2024-01-12
 
 ### Bug 修复

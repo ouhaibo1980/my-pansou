@@ -23,9 +23,8 @@ HTTP_PROXY="${HTTP_PROXY:-}"
 HTTPS_PROXY="${HTTPS_PROXY:-}"
 ALL_PROXY="${ALL_PROXY:-}"
 
-# 默认配置
-NODE_VERSION="18"  # 默认使用 18.x（兼容所有系统）
-NODE_VERSION_FULL=""  # 完整版本号（如 18.20.4 或 20.18.0）
+# 固定 Node.js 版本（兼容所有系统）
+NODE_VERSION_FULL="18.20.4"
 
 # 解析参数
 for arg in "$@"; do
@@ -38,10 +37,6 @@ for arg in "$@"; do
             PROJECT_NAME="${arg#*=}"
             shift
             ;;
-        --node-version=*)
-            NODE_VERSION="${arg#*=}"
-            shift
-            ;;
         *)
             ;;
     esac
@@ -49,37 +44,6 @@ done
 
 # 如果没有指定项目名称，使用默认值
 PROJECT_NAME="${PROJECT_NAME:-$DEFAULT_PROJECT_NAME}"
-
-# 智能选择 Node.js 版本（如果用户未手动指定）
-if [ -z "$NODE_VERSION" ] || [ "$NODE_VERSION" = "auto" ]; then
-    echo -e "${BLUE}🔍 检测系统 glibc 版本...${NC}"
-    GLIBC_VERSION=$(ldd --version | head -n1 | awk '{print $NF}')
-    echo "   - glibc 版本: $GLIBC_VERSION"
-
-    # 提取主版本号（如 2.17 或 2.28）
-    GLIBC_MAJOR=$(echo $GLIBC_VERSION | cut -d. -f1,2)
-
-    # 如果 glibc >= 2.28，使用 Node.js 20.x；否则使用 18.x
-    if [ "$GLIBC_MAJOR" = "2.28" ] || [ "$GLIBC_MAJOR" = "2.29" ] || [ "$GLIBC_MAJOR" = "2.30" ] || [ "$GLIBC_MAJOR" = "2.31" ] || [ "$GLIBC_MAJOR" = "2.32" ] || [ "$GLIBC_MAJOR" = "2.33" ] || [ "$GLIBC_MAJOR" = "2.34" ] || [ "$GLIBC_MAJOR" = "2.35" ]; then
-        NODE_VERSION="20"
-        echo -e "${GREEN}   → 系统较新，使用 Node.js 20.x${NC}"
-    else
-        NODE_VERSION="18"
-        echo -e "${YELLOW}   → 系统较旧（CentOS 7等），使用 Node.js 18.x${NC}"
-    fi
-else
-    echo -e "${BLUE}📦 使用指定的 Node.js 版本: ${NODE_VERSION}.x${NC}"
-fi
-
-# 设置完整版本号
-if [ "$NODE_VERSION" = "18" ]; then
-    NODE_VERSION_FULL="18.20.4"
-elif [ "$NODE_VERSION" = "20" ]; then
-    NODE_VERSION_FULL="20.18.0"
-else
-    NODE_VERSION_FULL="18.20.4"
-    echo -e "${YELLOW}⚠️  不支持的 Node.js 版本 $NODE_VERSION，使用默认 18.x${NC}"
-fi
 
 echo "=========================================="
 echo "$PROJECT_NAME - 快速安装脚本"
@@ -144,17 +108,7 @@ if ! command -v node &> /dev/null; then
     echo "   - 检测到系统: $OS"
 
     case $OS in
-        ubuntu|debian)
-            echo "   - 使用 NodeSource 安装 Node.js ${NODE_VERSION}.x..."
-            curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
-            apt-get install -y nodejs
-            ;;
-        centos|rhel|rocky|almalinux)
-            echo "   - 使用 NodeSource 安装 Node.js ${NODE_VERSION}.x..."
-            curl -fsSL https://rpm.nodesource.com/setup_${NODE_VERSION}.x | bash -
-            yum install -y nodejs
-            ;;
-        opencloudos|anolis|kylin)
+        ubuntu|debian|centos|rhel|rocky|almalinux|opencloudos|anolis|kylin)
             echo "   - 使用官方二进制包安装 Node.js ${NODE_VERSION_FULL}..."
             # 检测系统架构
             ARCH=$(uname -m)
@@ -189,14 +143,14 @@ if ! command -v node &> /dev/null; then
             rm /tmp/${NODE_TARBALL}
             ;;
         *)
-            echo "   - 使用通用方式安装 Node.js ${NODE_VERSION}.x..."
+            echo "   - 使用通用方式安装 Node.js 18.x..."
             # 尝试使用 nvm 安装
             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install ${NODE_VERSION}
-            nvm use ${NODE_VERSION}
-            nvm alias default ${NODE_VERSION}
+            nvm install 18
+            nvm use 18
+            nvm alias default 18
             ;;
     esac
 fi
