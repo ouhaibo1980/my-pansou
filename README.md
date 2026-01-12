@@ -2,17 +2,218 @@
 
 高性能网盘资源搜索引擎，提供美观的 Web 前端界面，支持 77 个搜索源插件。
 
-## 快速开始
+## 宝塔面板部署教程
 
-### 本地安装
+### 前置准备
 
-#### 前置要求
+确保你已经安装了宝塔面板。如果没有安装，可以参考：
+- [宝塔面板官网](https://www.bt.cn/)
+- [宝塔安装教程](https://www.bt.cn/bbs/thread-19376-1-1.html)
+
+### 安装步骤
+
+#### 1. 安装环境软件
+
+登录宝塔面板，进入 **软件商店**，安装以下软件：
+
+1. **Nginx** - Web 服务器（用于反向代理前端）
+2. **PM2 管理器** - Node.js 进程管理（用于运行前端）
+3. **Go 语言** - 后端运行环境（如果没有预装）
+
+**注意**：PM2 管理器会自动安装 Node.js，推荐安装 Node.js 18 或更高版本。
+
+#### 2. 克隆代码
+
+通过宝塔面板的 **终端** 或使用 SSH 连接到服务器：
+
+```bash
+# 进入网站根目录（默认为 /www/wwwroot）
+cd /www/wwwroot
+
+# 克隆仓库
+git clone git@github.com:ouhaibo1980/my-pansou.git pansou
+
+# 进入项目目录
+cd pansou
+```
+
+如果没有配置 SSH，可以直接在宝塔面板中上传项目压缩包，然后解压。
+
+#### 3. 部署前端
+
+在宝塔终端中执行：
+
+```bash
+# 进入前端目录
+cd /www/wwwroot/pansou/frontend
+
+# 安装依赖
+npm install -g pnpm
+pnpm install
+
+# 构建前端
+pnpm build
+
+# 使用 PM2 启动前端
+pm2 start npm --name "pansou-frontend" -- start
+```
+
+**PM2 启动参数说明：**
+- `npm` - 运行命令
+- `--name "pansou-frontend"` - 进程名称
+- `-- start` - 运行 npm start 命令
+
+#### 4. 部署后端
+
+在宝塔终端中执行：
+
+```bash
+# 返回项目根目录
+cd /www/wwwroot/pansou
+
+# 下载 Go 依赖
+go mod download
+
+# 使用 PM2 启动后端
+pm2 start go run --name "pansou-backend" -- main.go
+```
+
+或者先编译成二进制文件再运行：
+
+```bash
+# 编译后端
+go build -o pansou main.go
+
+# 使用 PM2 启动
+pm2 start ./pansou --name "pansou-backend"
+```
+
+#### 5. 配置 Nginx 反向代理
+
+在宝塔面板中：
+
+1. 进入 **网站** → **添加站点**
+2. 填写域名（如 `pansou.yourdomain.com`）
+3. 提交后点击 **设置**
+4. 选择 **配置文件** 选项卡
+
+将以下配置粘贴到 `location /` 之前：
+
+```nginx
+# 前端代理
+location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+
+# 后端 API 代理
+location /api {
+    proxy_pass http://127.0.0.1:8888;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+点击 **保存**，Nginx 会自动重载配置。
+
+#### 6. 验证部署
+
+1. **检查 PM2 进程状态**：
+   ```bash
+   pm2 list
+   ```
+
+   应该看到 `pansou-frontend` 和 `pansou-backend` 两个进程都在运行。
+
+2. **访问应用**：
+   - 打开浏览器访问你的域名
+   - 尝试搜索功能，验证前后端通信正常
+
+#### 7. 设置开机自启
+
+在宝塔终端中执行：
+
+```bash
+# 保存 PM2 进程列表
+pm2 save
+
+# 设置开机自启（需要 root 权限）
+pm2 startup
+```
+
+按照提示执行输出的命令即可。
+
+### 常见问题
+
+#### Q: PM2 命令找不到？
+
+A: 确保 PM2 管理器已正确安装，或在宝塔面板的 **软件商店** 中重新安装。
+
+#### Q: 前端端口 3000 被占用？
+
+A: 可以修改 `frontend/package.json` 中的启动脚本，指定其他端口：
+```json
+"start": "next start -p 3001"
+```
+同时记得更新 Nginx 配置中的 `proxy_pass` 端口。
+
+#### Q: 后端端口 8888 被占用？
+
+A: 可以在 `main.go` 中修改端口，或者使用环境变量指定：
+```bash
+pm2 start go run --name "pansou-backend" -- main.go --port=8889
+```
+
+#### Q: 如何查看日志？
+
+A: 使用 PM2 查看日志：
+```bash
+# 查看所有日志
+pm2 logs
+
+# 查看特定应用日志
+pm2 logs pansou-frontend
+pm2 logs pansou-backend
+
+# 清空日志
+pm2 flush
+```
+
+#### Q: 如何重启服务？
+
+A:
+```bash
+# 重启前端
+pm2 restart pansou-frontend
+
+# 重启后端
+pm2 restart pansou-backend
+
+# 重启所有服务
+pm2 restart all
+```
+
+#### Q: 搜索结果为空？
+
+A:
+1. 检查后端进程是否正常运行：`pm2 logs pansou-backend`
+2. 查看是否有网络请求错误
+3. 部分插件可能需要配置代理（如使用机场代理）
+
+## 本地开发
+
+### 前置要求
 
 - Go 1.24+
 - Node.js 18+
 - pnpm (推荐)
 
-#### 安装步骤
+### 安装步骤
 
 1. **克隆仓库**
 
@@ -46,10 +247,6 @@ go run main.go
 
 后端 API 将运行在 http://localhost:8888
 
-4. **访问应用**
-
-打开浏览器访问：http://localhost:5000
-
 ## 功能特性
 
 - 🚀 高性能并发搜索
@@ -63,9 +260,9 @@ go run main.go
 
 ## 访问地址
 
-- **Web 前端**: http://localhost:5000
-- **API 服务**: http://localhost:8888/api
-- **健康检查**: http://localhost:8888/api/health
+- **宝塔部署**: http://你的域名
+- **本地开发前端**: http://localhost:5000
+- **本地开发 API**: http://localhost:8888/api
 
 ## 技术栈
 
@@ -114,37 +311,6 @@ GET http://localhost:8888/api/health
 ├── push_to_github.sh      # GitHub 手动推送脚本
 ├── auto_sync_to_github.sh # GitHub 自动同步脚本
 └── watch_and_sync.sh      # 文件监控同步脚本
-```
-
-## 环境变量
-
-创建 `.env` 文件（可选）：
-
-```env
-# 服务端口
-PORT=8888
-
-# Go 模块代理（国内用户推荐）
-GOPROXY=https://goproxy.cn,direct
-
-# 启用的插件列表（77 个插件）
-ENABLED_PLUGINS=labi,zhizhen,shandian,duoduo,muou,wanou,hunhepan,jikepan,panwiki,pansearch,panta,qupansou,hdr4k,pan666,susu,thepiratebay,xuexizhinan,panyq,ouge,huban,cyg,erxiao,miaoso,fox4k,pianku,clmao,wuji,cldi,xiaozhang,libvio,leijing,xb6v,xys,ddys,hdmoli,yuhuage,u3c3,javdb,clxiong,jutoushe,sdso,xiaoji,xdyh,haisou,bixin,djgou,nyaa,xinjuc,aikanzy,qupanshe,xdpan,discourse,yunsou,qqpd,ahhhhfs,nsgame,gying,quark4k,quarksoo,sousou,ash
-
-# 缓存配置
-CACHE_ENABLED=true
-CACHE_PATH=./cache
-CACHE_MAX_SIZE=100
-CACHE_TTL=60
-
-# 异步插件配置
-ASYNC_PLUGIN_ENABLED=true
-ASYNC_RESPONSE_TIMEOUT=4
-ASYNC_MAX_BACKGROUND_WORKERS=20
-ASYNC_MAX_BACKGROUND_TASKS=100
-ASYNC_CACHE_TTL_HOURS=1
-
-# 时区
-TZ=Asia/Shanghai
 ```
 
 ## 支持的网盘类型
@@ -210,31 +376,6 @@ TZ=Asia/Shanghai
 - Ubuntu/Debian: `sudo apt-get install inotify-tools`
 - CentOS/RHEL: `sudo yum install inotify-tools`
 - macOS: `brew install fswatch`
-
-## 常见问题
-
-### Q: 前端无法连接后端 API？
-
-A: 检查前端 `src/app/api/search/route.ts` 中的后端 API 地址是否正确（默认 `http://localhost:8888`）
-
-### Q: 搜索结果为空？
-
-A: 检查 `ENABLED_PLUGINS` 环境变量是否正确配置，部分插件可能需要代理访问
-
-### Q: 如何启用代理？
-
-A: 在环境变量中添加：
-```env
-PROXY=socks5://127.0.0.1:7890
-```
-
-### Q: 如何编译后端二进制文件？
-
-A:
-```bash
-go build -o pansou main.go
-./pansou
-```
 
 ## 许可证
 
