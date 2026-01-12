@@ -300,9 +300,9 @@ cd frontend
 pnpm config set registry https://registry.npmmirror.com
 
 echo "   - 安装依赖..."
-pnpm install --silent
+pnpm install
 echo "   - 构建前端..."
-pnpm build --silent
+pnpm build
 echo -e "${GREEN}✅ 前端安装完成${NC}"
 
 # 7. 安装后端

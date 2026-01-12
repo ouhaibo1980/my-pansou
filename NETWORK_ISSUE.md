@@ -189,6 +189,52 @@ curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-
 
 ## 常见错误信息
 
+### 错误 3: next build --silent 选项不兼容
+
+**错误信息：**
+```
+> frontend@0.1.0 build /www/wwwroot/pansou/frontend
+> next build --silent
+
+error: unknown option '--silent'
+ ELIFECYCLE  Command failed with exit code 1.
+```
+
+**原因：**
+- Next.js 15.x 不支持 `--silent` 选项
+- 旧版本的 install.sh 使用了不兼容的构建命令
+
+**解决方案：使用最新版本的 install.sh**
+
+从 v1.2.2 版本开始，已修复此问题：
+
+```bash
+# 重新下载并执行最新版本
+cd /www/wwwroot
+rm -rf pansou
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
+
+**临时修复（手动执行）：**
+
+如果已经克隆了代码，可以直接重新构建：
+
+```bash
+cd /www/wwwroot/pansou/frontend
+
+# 清理旧的构建
+rm -rf .next node_modules
+
+# 重新安装依赖
+pnpm install
+
+# 重新构建（不使用 --silent）
+pnpm build
+
+# 重启服务
+pm2 restart all
+```
+
 ### 错误 2: glibc 版本不兼容（Node.js 20.x 无法安装）
 
 **错误信息：**
