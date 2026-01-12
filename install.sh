@@ -116,9 +116,39 @@ if ! command -v node &> /dev/null; then
             yum install -y nodejs
             ;;
         opencloudos|anolis|kylin)
-            echo "   - 使用 NodeSource 安装 Node.js 18.x..."
-            curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
-            yum install -y nodejs
+            echo "   - 使用官方二进制包安装 Node.js 18.x..."
+            # 检测系统架构
+            ARCH=$(uname -m)
+            if [ "$ARCH" = "x86_64" ]; then
+                NODE_ARCH="x64"
+            elif [ "$ARCH" = "aarch64" ]; then
+                NODE_ARCH="arm64"
+            else
+                NODE_ARCH="x64"
+            fi
+
+            # 下载 Node.js 18.x 二进制包
+            NODE_VERSION="18.20.4"
+            NODE_TARBALL="node-v${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz"
+
+            echo "   - 正在下载 Node.js ${NODE_VERSION}..."
+            if ! wget -O /tmp/${NODE_TARBALL} https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TARBALL} --timeout=30; then
+                echo "   - 官方源下载失败，尝试从国内镜像下载..."
+                # 尝试从腾讯云镜像下载
+                wget -O /tmp/${NODE_TARBALL} https://mirrors.cloud.tencent.com/nodejs-release/v${NODE_VERSION}/${NODE_TARBALL} || \
+                # 尝试从阿里云镜像下载
+                wget -O /tmp/${NODE_TARBALL} https://mirrors.aliyun.com/nodejs-release/v${NODE_VERSION}/${NODE_TARBALL} || {
+                    echo -e "${RED}❌ Node.js 下载失败，请手动安装${NC}"
+                    exit 1
+                }
+            fi
+
+            # 解压并安装
+            tar -xf /tmp/${NODE_TARBALL} -C /usr/local --strip-components=1
+            ln -sf /usr/local/bin/node /usr/bin/node
+            ln -sf /usr/local/bin/npm /usr/bin/npm
+            ln -sf /usr/local/bin/npx /usr/bin/npx
+            rm /tmp/${NODE_TARBALL}
             ;;
         *)
             echo "   - 使用通用方式安装 Node.js..."

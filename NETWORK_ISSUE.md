@@ -178,6 +178,23 @@ curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-
 
 ## 常见错误信息
 
+### 错误 1: OpenCloudOS/AnolisOS NodeSource 安装失败
+
+**错误信息：**
+```
+2026-01-12 13:22:54 - Error: This script is intended for RPM-based systems. Please run it on an RPM-based system. (Exit Code: 1)
+```
+
+**原因**：
+- NodeSource 的安装脚本无法正确识别 OpenCloudOS、AnolisOS、麒麟等国产 Linux 系统
+- 这些系统虽然基于 RPM，但发行版标识与标准系统不同
+
+**解决**：
+最新版本的 install.sh（v1.1.2+）已修复此问题，改用以下方案：
+- 直接下载 Node.js 18.x 官方二进制包
+- 支持自动检测系统架构（x64/arm64）
+- 自动切换到国内镜像源（腾讯云/阿里云）
+
 ### 错误 0: 不支持的指令 / npm: command not found
 
 **错误信息：**
