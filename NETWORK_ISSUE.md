@@ -1,0 +1,222 @@
+# 宝塔安装网络问题解决方案
+
+## 问题描述
+
+在执行安装脚本时，可能会遇到以下错误：
+
+```
+curl: (28) Failed to connect to cdn.jsdelivr.net port 443 after 135568 ms: Couldn't connect to server
+```
+
+## 问题原因
+
+1. **网络问题**：国内服务器无法访问 cdn.jsdelivr.net
+2. **npm/pnpm 默认源**：默认使用国外的 npm registry
+3. **Go 默认代理**：Go 默认直接访问 golang.org 或 go.dev
+
+## 解决方案（已自动配置）
+
+从 v1.1 版本开始，install.sh 和 quick_start.sh 脚本已自动配置国内镜像源：
+
+### 自动配置内容
+
+1. **npm 镜像**：使用淘宝镜像 `https://registry.npmmirror.com`
+2. **pnpm 镜像**：使用淘宝镜像 `https://registry.npmmirror.com`
+3. **Go 代理**：使用 `https://goproxy.cn,direct`
+4. **Go 下载源**：自动切换到腾讯云/阿里云镜像
+
+### 安装脚本新增功能
+
+```bash
+# install.sh 自动配置
+echo "   - 配置 npm 淘宝镜像..."
+npm config set registry https://registry.npmmirror.com
+
+echo "   - 配置 pnpm 淘宝镜像..."
+pnpm config set registry https://registry.npmmirror.com
+
+echo "   - 配置 Go 国内代理..."
+export GOPROXY=https://goproxy.cn,direct
+
+# Go 下载自动切换镜像源
+wget -O /tmp/go1.24.linux-amd64.tar.gz https://mirrors.cloud.tencent.com/golang/go1.24.0.linux-amd64.tar.gz
+```
+
+## 手动配置方法（旧版本或特殊环境）
+
+如果使用的是旧版本脚本，可以手动配置：
+
+### 1. 配置 npm 镜像
+
+```bash
+# 临时配置
+npm config set registry https://registry.npmmirror.com
+
+# 验证配置
+npm config get registry
+```
+
+### 2. 配置 pnpm 镜像
+
+```bash
+# 临时配置
+pnpm config set registry https://registry.npmmirror.com
+
+# 验证配置
+pnpm config get registry
+```
+
+### 3. 配置 Go 代理
+
+```bash
+# 临时配置（当前会话）
+export GOPROXY=https://goproxy.cn,direct
+
+# 永久配置（写入 ~/.bashrc）
+echo 'export GOPROXY=https://goproxy.cn,direct' >> ~/.bashrc
+source ~/.bashrc
+
+# 验证配置
+echo $GOPROXY
+```
+
+### 4. 手动下载 Go（如果脚本下载失败）
+
+```bash
+# 从腾讯云镜像下载
+wget -O /tmp/go1.24.linux-amd64.tar.gz https://mirrors.cloud.tencent.com/golang/go1.24.0.linux-amd64.tar.gz
+
+# 或从阿里云镜像下载
+wget -O /tmp/go1.24.linux-amd64.tar.gz https://mirrors.aliyun.com/golang/go1.24.0.linux-amd64.tar.gz
+
+# 解压安装
+tar -C /usr/local -xzf /tmp/go1.24.linux-amd64.tar.gz
+echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+source /etc/profile
+```
+
+## 国内镜像源列表
+
+### npm/pnpm 镜像
+
+| 镜像名称 | 地址 |
+|---------|------|
+| 淘宝镜像（推荐） | https://registry.npmmirror.com |
+| 腾讯云镜像 | https://mirrors.cloud.tencent.com/npm/ |
+| 华为云镜像 | https://mirrors.huaweicloud.com/repository/npm/ |
+
+### Go 代理
+
+| 代理名称 | 地址 |
+|---------|------|
+| 七牛云（推荐） | https://goproxy.cn,direct |
+| 阿里云 | https://mirrors.aliyun.com/goproxy/ |
+| 腾讯云 | https://mirrors.cloud.tencent.com/go/ |
+
+### Go 下载镜像
+
+| 镜像名称 | 地址 |
+|---------|------|
+| 腾讯云 | https://mirrors.cloud.tencent.com/golang/ |
+| 阿里云 | https://mirrors.aliyun.com/golang/ |
+
+## 测试镜像源
+
+```bash
+# 测试 npm 镜像
+curl -I https://registry.npmmirror.com
+
+# 测试 Go 代理
+curl -I https://goproxy.cn
+
+# 测试 Go 下载镜像
+curl -I https://mirrors.cloud.tencent.com/golang/go1.24.0.linux-amd64.tar.gz
+```
+
+## 其他网络问题
+
+### 无法访问 GitHub
+
+参考 README.md 中的"无法访问 GitHub 怎么办？"章节，使用 GitHub 代理。
+
+### Git clone 失败
+
+```bash
+# 方法 1：使用 GitHub 代理
+git clone https://gh.ddlc.top/https://github.com/ouhaibo1980/my-pansou.git
+
+# 方法 2：配置 Git 代理
+git config --global http.proxy http://127.0.0.1:7890
+git config --global https.proxy http://127.0.0.1:7890
+```
+
+## 脚本版本说明
+
+- **v1.1+**：自动配置国内镜像源，无需手动配置
+- **v1.0**：需要手动配置镜像源
+
+查看脚本版本：
+
+```bash
+# 查看安装脚本版本
+head -20 install.sh | grep -i version
+
+# 或查看 Git 提交历史
+git log --oneline -5
+```
+
+## 更新脚本到最新版本
+
+```bash
+# 如果已安装，重新拉取最新脚本
+cd /www/wwwroot/pansou
+git pull origin main
+
+# 或重新执行安装
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
+
+## 常见错误信息
+
+### 错误 1: npm ERR! network timeout
+
+**原因**：npm 无法访问默认源
+
+**解决**：脚本已自动配置淘宝镜像
+
+### 错误 2: go: golang.org/x/...: unrecognized import path
+
+**原因**：Go 无法访问 golang.org
+
+**解决**：脚本已自动配置 goproxy.cn
+
+### 错误 3: Connection refused
+
+**原因**：网络完全无法访问外网
+
+**解决**：使用本地代理或 VPN
+
+## 联系支持
+
+如果仍然遇到网络问题，请提供以下信息：
+
+1. 错误信息的完整输出
+2. 服务器所在地区
+3. 是否可以使用代理
+4. 测试镜像源的结果
+
+```bash
+# 收集诊断信息
+echo "=== npm 配置 ==="
+npm config get registry
+
+echo "=== pnpm 配置 ==="
+pnpm config get registry
+
+echo "=== Go 代理配置 ==="
+echo $GOPROXY
+
+echo "=== 网络测试 ==="
+curl -I https://registry.npmmirror.com
+curl -I https://goproxy.cn
+```
