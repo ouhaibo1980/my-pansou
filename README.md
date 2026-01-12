@@ -493,6 +493,43 @@ npm config set registry https://registry.npmmirror.com
 pnpm config set registry https://registry.npmmirror.com
 ```
 
+#### Q: 安装时报错 "不支持的指令" 或 "npm: command not found" 怎么办？
+
+A: 这是宝塔面板安装命令不支持导致的，脚本已修复，支持多种 Linux 发行版：
+
+**问题原因：**
+- 宝塔面板的 `bt install pm2_manager` 命令在新版本中可能不兼容
+- 导致 Node.js 安装失败，npm 命令不存在
+
+**解决方案：**
+最新版本的 install.sh（v1.1.1+）已修复此问题，支持：
+- Ubuntu / Debian
+- CentOS / RHEL / Rocky Linux
+- OpenCloudOS / AnolisOS / 麒麟系统
+
+**重新执行安装：**
+
+```bash
+# 重新下载最新脚本
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
+
+**手动安装 Node.js（如果脚本仍失败）：**
+
+```bash
+# Ubuntu/Debian 系统
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo bash -
+sudo apt-get install -y nodejs
+
+# CentOS/RHEL/Rocky/OpenCloudOS 系统
+curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+sudo yum install -y nodejs
+
+# 验证安装
+node -v
+npm -v
+```
+
 **2. 配置 Go 使用国内代理**
 
 ```bash

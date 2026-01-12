@@ -1,5 +1,26 @@
 # 更新日志
 
+## [1.1.1] - 2024-01-12
+
+### Bug 修复
+
+- 修复宝塔面板安装 Node.js 失败问题
+- 移除不兼容的 `bt install pm2_manager` 命令
+- 改用通用方式安装 Node.js，支持多种 Linux 发行版
+- 将 GOPROXY 配置写入 `/etc/profile` 永久生效
+
+### 新增支持
+
+- ✅ Ubuntu / Debian 系统
+- ✅ CentOS / RHEL / Rocky Linux
+- ✅ OpenCloudOS / AnolisOS / 麒麟系统
+- ✅ 自动检测 Linux 发行版并选择对应的安装方式
+
+### 文档更新
+
+- 更新 `README.md` - 添加"不支持的指令"错误解决方案
+- 更新 `NETWORK_ISSUE.md` - 添加错误 0 详细说明和手动修复方法
+
 ## [1.1.0] - 2024-01-12
 
 ### 新增功能

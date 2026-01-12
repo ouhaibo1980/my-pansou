@@ -178,6 +178,49 @@ curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-
 
 ## 常见错误信息
 
+### 错误 0: 不支持的指令 / npm: command not found
+
+**错误信息：**
+```
+不支持的指令
+===============================================
+已取消!
+⚠️  未检测到 PM2，正在安装...
+bash: line 109: npm: command not found
+```
+
+**原因**：
+- 宝塔面板的 `bt install pm2_manager` 命令在新版本中可能不兼容
+- Node.js 安装失败，导致 npm 命令不存在
+
+**解决**：
+最新版本的 install.sh（v1.1.1+）已修复此问题，支持多种 Linux 发行版：
+- Ubuntu / Debian
+- CentOS / RHEL / Rocky Linux
+- OpenCloudOS / AnolisOS / 麒麟系统
+
+**手动修复**：
+```bash
+# Ubuntu/Debian 系统
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo bash -
+sudo apt-get install -y nodejs
+
+# CentOS/RHEL/Rocky/OpenCloudOS 系统
+curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+sudo yum install -y nodejs
+
+# 验证安装
+node -v
+npm -v
+
+# 安装 PM2
+npm install -g pm2
+
+# 重新运行安装脚本
+cd /www/wwwroot/pansou
+sudo ./install.sh ou="装歌盘搜"
+```
+
 ### 错误 1: npm ERR! network timeout
 
 **原因**：npm 无法访问默认源
