@@ -106,17 +106,17 @@ if ! command -v node &> /dev/null; then
 
     case $OS in
         ubuntu|debian)
-            echo "   - 使用 NodeSource 安装 Node.js 18.x..."
-            curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+            echo "   - 使用 NodeSource 安装 Node.js 20.x..."
+            curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
             apt-get install -y nodejs
             ;;
         centos|rhel|rocky|almalinux)
-            echo "   - 使用 NodeSource 安装 Node.js 18.x..."
-            curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
+            echo "   - 使用 NodeSource 安装 Node.js 20.x..."
+            curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
             yum install -y nodejs
             ;;
         opencloudos|anolis|kylin)
-            echo "   - 使用官方二进制包安装 Node.js 18.x..."
+            echo "   - 使用官方二进制包安装 Node.js 20.x..."
             # 检测系统架构
             ARCH=$(uname -m)
             if [ "$ARCH" = "x86_64" ]; then
@@ -127,8 +127,8 @@ if ! command -v node &> /dev/null; then
                 NODE_ARCH="x64"
             fi
 
-            # 下载 Node.js 18.x 二进制包
-            NODE_VERSION="18.20.4"
+            # 下载 Node.js 20.x 二进制包
+            NODE_VERSION="20.18.0"
             NODE_TARBALL="node-v${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz"
 
             echo "   - 正在下载 Node.js ${NODE_VERSION}..."
@@ -156,9 +156,9 @@ if ! command -v node &> /dev/null; then
             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install 18
-            nvm use 18
-            nvm alias default 18
+            nvm install 20
+            nvm use 20
+            nvm alias default 20
             ;;
     esac
 fi

@@ -761,6 +761,7 @@ go run main.go
 ## 技术栈
 
 ### 前端
+- **Node.js >= 20.9.0**（必需）
 - Next.js 16 (App Router)
 - React 19
 - Tailwind CSS 4

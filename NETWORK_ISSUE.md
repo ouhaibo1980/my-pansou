@@ -5,6 +5,26 @@
 在执行安装脚本时，可能会遇到以下错误：
 
 ```
+You are using Node.js 18.20.8. For Next.js, Node.js version ">=20.9.0" is required.
+```
+
+## Node.js 版本要求
+
+**Next.js 16 要求 Node.js 版本 >= 20.9.0**
+
+从 v1.1.4 版本开始，install.sh 脚本已将 Node.js 版本升级到 20.x：
+
+### 自动安装的 Node.js 版本
+
+- **Ubuntu/Debian/CentOS/RHEL/Rocky/AlmaLinux**: Node.js 20.x（通过 NodeSource）
+- **OpenCloudOS/AnolisOS/麒麟系统**: Node.js 20.18.0（官方二进制包）
+- **其他系统**: Node.js 20.x（通过 nvm）
+
+## 错误 2: Node.js 版本不兼容
+
+在执行安装脚本时，可能会遇到以下错误：
+
+```
 curl: (28) Failed to connect to cdn.jsdelivr.net port 443 after 135568 ms: Couldn't connect to server
 ```
 
@@ -177,6 +197,86 @@ curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-
 ```
 
 ## 常见错误信息
+
+### 错误 2: Node.js 版本不兼容
+
+**错误信息：**
+```
+> frontend@0.1.0 build /www/wwwroot/pansou/frontend
+> next build --silent
+
+You are using Node.js 18.20.8. For Next.js, Node.js version ">=20.9.0" is required.
+ ELIFECYCLE  Command failed with exit code 1
+```
+
+**原因**：
+- Next.js 16 要求 Node.js 版本 >= 20.9.0
+- 当前系统安装的是 Node.js 18.x 版本，不满足要求
+
+**解决方案 1：重新安装项目（推荐）**
+
+使用最新版本的 install.sh（v1.1.4+）重新安装，会自动安装 Node.js 20.x：
+
+```bash
+# 先卸载旧版本
+cd /www/wwwroot
+./pansou/uninstall.sh
+
+# 重新安装（会自动安装 Node.js 20.x）
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash -s -- ou="装歌盘搜"
+```
+
+**解决方案 2：手动升级 Node.js**
+
+```bash
+# 卸载旧版本 Node.js（根据安装方式选择）
+
+# 如果是通过包管理器安装（Ubuntu/Debian）
+sudo apt-get remove -y nodejs
+
+# 如果是通过包管理器安装（CentOS/RHEL）
+sudo yum remove -y nodejs
+
+# 如果是手动安装的二进制包
+sudo rm -rf /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
+
+# 重新安装 Node.js 20.x
+
+# Ubuntu/Debian
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt-get install -y nodejs
+
+# CentOS/RHEL
+curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
+sudo yum install -y nodejs
+
+# OpenCloudOS/AnolisOS/麒麟（手动安装）
+wget -O /tmp/node-v20.18.0-linux-x64.tar.xz https://nodejs.org/dist/v20.18.0/node-v20.18.0-linux-x64.tar.xz
+sudo tar -xf /tmp/node-v20.18.0-linux-x64.tar.xz -C /usr/local --strip-components=1
+sudo ln -sf /usr/local/bin/node /usr/bin/node
+sudo ln -sf /usr/local/bin/npm /usr/bin/npm
+sudo ln -sf /usr/local/bin/npx /usr/bin/npx
+sudo rm /tmp/node-v20.18.0-linux-x64.tar.xz
+
+# 验证安装
+node -v  # 应该显示 v20.x.x
+```
+
+**解决方案 3：使用 nvm 管理版本**
+
+```bash
+# 安装 nvm（如果未安装）
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+source ~/.bashrc
+
+# 安装并使用 Node.js 20.x
+nvm install 20
+nvm use 20
+nvm alias default 20
+
+# 验证
+node -v
+```
 
 ### 错误 1: OpenCloudOS/AnolisOS NodeSource 安装失败
 

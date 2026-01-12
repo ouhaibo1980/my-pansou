@@ -1,5 +1,28 @@
 # 更新日志
 
+## [1.1.4] - 2024-01-12
+
+### 重要更新
+
+- **将 Node.js 版本从 18.x 升级到 20.x**
+- **解决 Next.js 16 要求 Node.js >= 20.9.0 的版本兼容性问题**
+
+### 改进
+
+- 所有安装方式统一使用 Node.js 20.x
+  - Ubuntu/Debian/CentOS/RHEL/Rocky/AlmaLinux: Node.js 20.x（NodeSource）
+  - OpenCloudOS/AnolisOS/麒麟: Node.js 20.18.0（官方二进制包）
+  - 其他系统: Node.js 20.x（nvm）
+
+### 文档更新
+
+- 更新 `NETWORK_ISSUE.md` - 添加错误 2（Node.js 版本不兼容）详细说明和解决方案
+
+### Bug 修复
+
+- 修复前端构建时 Node.js 版本不兼容错误
+- 修复 `next build` 失败问题
+
 ## [1.1.3] - 2024-01-12
 
 ### 新增功能
