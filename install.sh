@@ -262,7 +262,17 @@ echo -e "${GREEN}✅ 前端安装完成${NC}"
 # 7. 安装后端
 echo ""
 echo -e "${BLUE}🔧 安装后端...${NC}"
-cd ..
+cd "$PROJECT_DIR"
+
+# 检查 go.mod 文件是否存在
+if [ ! -f "go.mod" ]; then
+    echo -e "${RED}❌ 错误：未找到 go.mod 文件${NC}"
+    echo -e "${RED}   当前目录：$(pwd)${NC}"
+    echo -e "${RED}   项目目录：$PROJECT_DIR${NC}"
+    echo -e "${YELLOW}   请确保在项目根目录下运行此脚本${NC}"
+    exit 1
+fi
+
 echo "   - 下载 Go 依赖..."
 
 # 配置 Go 代理（国内用户推荐）
@@ -286,12 +296,12 @@ pm2 delete "${PROJECT_NAME}-backend" 2>/dev/null || true
 
 # 启动前端
 echo "   - 启动前端..."
-cd frontend
+cd "$PROJECT_DIR/frontend"
 pm2 start npm --name "${PROJECT_NAME}-frontend" -- start
 
 # 启动后端
 echo "   - 启动后端..."
-cd ..
+cd "$PROJECT_DIR"
 pm2 start ./pansou --name "${PROJECT_NAME}-backend"
 
 # 设置开机自启
