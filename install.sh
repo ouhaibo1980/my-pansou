@@ -289,10 +289,10 @@ echo "   - 启动前端..."
 cd frontend
 pm2 start npm --name "${PROJECT_NAME}-frontend" -- start
 
-# 启动后端
+# 启动后端（启用所有搜索插件）
 echo "   - 启动后端..."
 cd ..
-pm2 start ./pansou --name "${PROJECT_NAME}-backend"
+ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj" ENV=production PORT=8888 pm2 start ./pansou --name "${PROJECT_NAME}-backend}"
 
 # 设置开机自启
 pm2 save
@@ -307,24 +307,23 @@ if [ "$BT_INSTALLED" = true ]; then
     echo -e "${YELLOW}   配置文件路径：/www/server/panel/vhost/nginx/你的域名.conf${NC}"
     echo ""
     echo "   前端代理配置："
-    echo "   ```nginx"
+    echo ""
     echo "   location / {"
-    echo "       proxy_pass http://127.0.0.1:3000;"
+    echo "       proxy_pass http://127.0.0.1:5000;"
     echo "       proxy_set_header Host \$host;"
     echo "       proxy_set_header X-Real-IP \$remote_addr;"
     echo "       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;"
     echo "   }"
-    echo "   ```"
     echo ""
     echo "   后端 API 代理配置："
-    echo "   ```nginx"
+    echo ""
     echo "   location /api {"
     echo "       proxy_pass http://127.0.0.1:8888;"
     echo "       proxy_set_header Host \$host;"
     echo "       proxy_set_header X-Real-IP \$remote_addr;"
     echo "       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;"
     echo "   }"
-    echo "   ```"
+    echo ""
 fi
 
 # 10. 输出安装结果

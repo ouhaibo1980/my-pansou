@@ -42,10 +42,10 @@ echo ""
 # 1. 检查环境
 echo -e "${BLUE}🔍 检查环境...${NC}"
 
-# 检查 pnpm
-if ! command -v pnpm &> /dev/null; then
-    echo -e "${RED}❌ 未检测到 pnpm${NC}"
-    echo "   请先安装: npm install -g pnpm"
+# 检查 npm
+if ! command -v npm &> /dev/null; then
+    echo -e "${RED}❌ 未检测到 npm${NC}"
+    echo "   请先安装 Node.js"
     exit 1
 fi
 
@@ -68,11 +68,11 @@ echo -e "${GREEN}✅ 环境检查通过${NC}"
 # 1.5 配置国内镜像源
 echo ""
 echo -e "${BLUE}⚙️  配置国内镜像源...${NC}"
-pnpm config set registry https://registry.npmmirror.com
+npm config set registry https://registry.npmmirror.com
 export GOPROXY=https://goproxy.cn,direct
 echo -e "${GREEN}✅ 镜像源配置完成${NC}"
 
-# 2. 启动后端
+# 2. 启动后端（启用所有搜索插件）
 echo ""
 echo -e "${BLUE}🔧 启动后端...${NC}"
 
@@ -83,9 +83,9 @@ fi
 
 # 停止旧进程
 pm2 delete "${PROJECT_NAME}-backend" 2>/dev/null || true
-
 # 启动后端
-pm2 start ./pansou --name "${PROJECT_NAME}-backend"
+# 启动后端（启用所有搜索插件）
+ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj" ENV=production PORT=8888 pm2 start ./pansou --name "${PROJECT_NAME}-backend}"
 echo -e "${GREEN}✅ 后端已启动${NC}"
 
 # 3. 启动前端
