@@ -7,17 +7,17 @@
 一键启动，开箱即用：
 
 ```bash
-docker run -d --name pansou -p 80:80 ghcr.io/ouhaibo1980/pansou:latest
+docker run -d --name pansou -p 5000:5000 ghcr.io/ouhaibo1980/pansou:latest
 ```
 
-启动后访问：http://localhost
+启动后访问：http://localhost:5000
 
 ### 使用 Docker Compose（推荐）
 
 #### 下载配置文件
 
 ```bash
-curl -o docker-compose.yml https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/docker-compose.yml
+curl -o docker-compose.yml https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/docker-compose.simple.yml
 ```
 
 #### 一键启动
