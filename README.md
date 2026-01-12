@@ -170,36 +170,5 @@ cd my-pansou
 
 如需修改端口，编辑 `docker-compose.yml` 中的 `ports` 配置。
 
-## 自动同步到 GitHub
 
-项目提供了便捷的自动同步功能，将代码推送到 GitHub 仓库供他人部署。
 
-### 方式一：手动触发同步
-
-当你修改代码后，运行此脚本会自动检测变动并推送到 GitHub：
-
-```bash
-# 检测变动并自动同步
-./auto_sync_to_github.sh
-```
-
-脚本会自动：
-- 检测文件变动
-- 添加所有更改
-- 提交（带时间戳）
-- 推送到 GitHub
-
-### 方式二：后台自动监控（推荐）
-
-启动守护进程后，每 10 秒自动检测变动并同步：
-
-```bash
-# 启动守护进程
-./watch_and_sync.sh start
-
-# 停止守护进程
-./watch_and_sync.sh stop
-
-# 查看运行状态
-./watch_and_sync.sh status
-```
