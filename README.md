@@ -4,63 +4,51 @@
 
 ## 快速开始
 
-### 使用 Docker 部署
+### 本地安装
 
-#### 克隆仓库并启动
+#### 前置要求
+
+- Go 1.24+
+- Node.js 18+
+- pnpm (推荐)
+
+#### 安装步骤
+
+1. **克隆仓库**
 
 ```bash
-# 克隆仓库
 git clone git@github.com:ouhaibo1980/my-pansou.git
 cd my-pansou
-
-# 一键启动
-./start_docker.sh
 ```
 
-#### 或直接使用 Docker Compose
+2. **启动前端**
 
 ```bash
-# 克隆仓库
-git clone git@github.com:ouhaibo1980/my-pansou.git
-cd my-pansou
-
-# 启动服务
-docker-compose up -d
+cd frontend
+pnpm install
+pnpm dev
 ```
 
-启动后访问：http://localhost:5000
+前端将运行在 http://localhost:5000
 
-#### 管理命令
+3. **启动后端**
 
 ```bash
-# 停止服务
-./stop_docker.sh
+# 返回项目根目录
+cd ..
 
-# 重启服务
-./restart_docker.sh
+# 下载依赖（如果需要）
+go mod download
 
-# 查看日志
-docker-compose -p pansou logs -f
-
-# 查看服务状态
-docker-compose -p pansou ps
+# 运行后端
+go run main.go
 ```
 
-### 使用本地代码构建
+后端 API 将运行在 http://localhost:8888
 
-```bash
-# 克隆仓库
-git clone git@github.com:ouhaibo1980/my-pansou.git
-cd my-pansou
+4. **访问应用**
 
-# 构建镜像
-docker build -t pansou-local .
-
-# 运行容器
-docker run -d --name pansou -p 5000:5000 pansou-local
-```
-
-启动后访问：http://localhost:5000
+打开浏览器访问：http://localhost:5000
 
 ## 功能特性
 
@@ -72,13 +60,12 @@ docker run -d --name pansou -p 5000:5000 pansou-local
 - 🔌 异步插件系统
 - 💾 二级缓存机制
 - 🔒 自动过滤失效链接
-- 🐳 Docker 一键部署，开箱即用
 
 ## 访问地址
 
 - **Web 前端**: http://localhost:5000
-- **API 服务**: http://localhost:5000/api
-- **健康检查**: http://localhost:5000/api/health
+- **API 服务**: http://localhost:8888/api
+- **健康检查**: http://localhost:8888/api/health
 
 ## 技术栈
 
@@ -89,15 +76,15 @@ docker run -d --name pansou -p 5000:5000 pansou-local
 - Lucide React (图标库)
 
 ### 后端
-- Go 1.22
+- Go 1.24
 - Gin Web 框架
 
 ## API 接口
 
 ### 搜索接口
 ```
-GET http://localhost:5000/api/search?keyword=搜索关键词
-POST http://localhost:5000/api/search
+GET http://localhost:8888/api/search?keyword=搜索关键词
+POST http://localhost:8888/api/search
 Content-Type: application/json
 
 {
@@ -107,7 +94,7 @@ Content-Type: application/json
 
 ### 健康检查
 ```
-GET http://localhost:5000/api/health
+GET http://localhost:8888/api/health
 ```
 
 ## 项目结构
@@ -120,21 +107,41 @@ GET http://localhost:5000/api/health
 │   │       └── page.tsx    # 主页面
 │   └── package.json
 ├── plugin/            # 77 个搜索源插件
-├── pansou            # Go 后端二进制文件
-├── cache/            # 缓存目录
-├── Dockerfile        # Docker 镜像构建文件
-├── docker-compose.yml  # Docker Compose 配置
-├── start_docker.sh   # 一键启动脚本
-├── stop_docker.sh    # 停止脚本
-├── restart_docker.sh # 重启脚本
-└── .coze            # 项目配置
+├── service/           # 业务逻辑
+├── main.go           # Go 后端入口
+└── cache/            # 缓存目录
 ```
 
 ## 环境变量
 
-- `PORT`: 服务端口（默认 5000）
-- `GOPROXY`: Go 模块代理
-- `ENABLED_PLUGINS`: 启用的插件列表（77 个插件）
+创建 `.env` 文件（可选）：
+
+```env
+# 服务端口
+PORT=8888
+
+# Go 模块代理（国内用户推荐）
+GOPROXY=https://goproxy.cn,direct
+
+# 启用的插件列表（77 个插件）
+ENABLED_PLUGINS=labi,zhizhen,shandian,duoduo,muou,wanou,hunhepan,jikepan,panwiki,pansearch,panta,qupansou,hdr4k,pan666,susu,thepiratebay,xuexizhinan,panyq,ouge,huban,cyg,erxiao,miaoso,fox4k,pianku,clmao,wuji,cldi,xiaozhang,libvio,leijing,xb6v,xys,ddys,hdmoli,yuhuage,u3c3,javdb,clxiong,jutoushe,sdso,xiaoji,xdyh,haisou,bixin,djgou,nyaa,xinjuc,aikanzy,qupanshe,xdpan,discourse,yunsou,qqpd,ahhhhfs,nsgame,gying,quark4k,quarksoo,sousou,ash
+
+# 缓存配置
+CACHE_ENABLED=true
+CACHE_PATH=./cache
+CACHE_MAX_SIZE=100
+CACHE_TTL=60
+
+# 异步插件配置
+ASYNC_PLUGIN_ENABLED=true
+ASYNC_RESPONSE_TIMEOUT=4
+ASYNC_MAX_BACKGROUND_WORKERS=20
+ASYNC_MAX_BACKGROUND_TASKS=100
+ASYNC_CACHE_TTL_HOURS=1
+
+# 时区
+TZ=Asia/Shanghai
+```
 
 ## 支持的网盘类型
 
@@ -165,46 +172,31 @@ GET http://localhost:5000/api/health
 }
 ```
 
-## Docker 一键启动
+## 常见问题
 
-项目提供了 Docker 一键启动方案，开箱即用，无需手动安装依赖。
+### Q: 前端无法连接后端 API？
 
-### 前置要求
+A: 检查前端 `src/app/api/search/route.ts` 中的后端 API 地址是否正确（默认 `http://localhost:8888`）
 
-- Docker 已安装
-- Docker Compose 已安装（Docker Desktop 自带）
+### Q: 搜索结果为空？
 
-### 一键启动
+A: 检查 `ENABLED_PLUGINS` 环境变量是否正确配置，部分插件可能需要代理访问
 
-```bash
-# 启动服务（前端 + 后端）
-./start_docker.sh
+### Q: 如何启用代理？
+
+A: 在环境变量中添加：
+```env
+PROXY=socks5://127.0.0.1:7890
 ```
 
-脚本会自动：
-- 配置 docker-compose.yml
-- 构建并启动前端和后端容器
-- 配置网络和数据卷
+### Q: 如何编译后端二进制文件？
 
-### 访问地址
-
-- **Web 前端**: http://localhost:5000
-- **API 服务**: http://localhost:5000/api
-- **健康检查**: http://localhost:5000/api/health
-
-### 管理命令
-
+A:
 ```bash
-# 停止服务
-./stop_docker.sh
-
-# 重启服务
-./restart_docker.sh
-
-# 查看日志
-docker-compose -p pansou logs -f
-
-# 查看服务状态
-docker-compose -p pansou ps
+go build -o pansou main.go
+./pansou
 ```
 
+## 许可证
+
+MIT
