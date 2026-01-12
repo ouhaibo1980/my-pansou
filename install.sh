@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 DEFAULT_PROJECT_NAME="装歌盘搜"
 PROJECT_DIR="/www/wwwroot/pansou"
 FRONTEND_PORT=5000
-BACKEND_PORT=8888
+BACKEND_PORT=9999
 
 # 代理配置（通过环境变量设置）
 HTTP_PROXY="${HTTP_PROXY:-}"

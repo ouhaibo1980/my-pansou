@@ -4,7 +4,7 @@ set -Eeuo pipefail
 cd "${COZE_WORKSPACE_PATH}"
 
 export ENV=production
-export PORT=8888
+export PORT=9999
 export GOPROXY=https://goproxy.cn,direct
 
 # 启用所有搜索源插件（77个）
@@ -17,7 +17,7 @@ pkill -9 "next" 2>/dev/null || true
 sleep 5
 
 # 启动后端 API 服务
-echo "Starting 装歌盘搜 API service on port 8888..." >&2
+echo "Starting 装歌盘搜 API service on port 9999..." >&2
 nohup ./pansou > /tmp/pansou.log 2>&1 &
 BACKEND_PID=$!
 sleep 8
@@ -30,13 +30,13 @@ if ! kill -0 $BACKEND_PID 2>/dev/null; then
 fi
 
 # 检查后端是否启动成功
-if ! ss -tuln 2>/dev/null | grep -q 'LISTEN.*:8888'; then
-  echo "ERROR: 装歌盘搜 API service is running but not listening on port 8888" >&2
+if ! ss -tuln 2>/dev/null | grep -q 'LISTEN.*:9999'; then
+  echo "ERROR: 装歌盘搜 API service is running but not listening on port 9999" >&2
   tail -30 /tmp/pansou.log >&2
   exit 1
 fi
 
-echo "✅ 装歌盘搜 API started on port 8888 (PID: $BACKEND_PID)" >&2
+echo "✅ 装歌盘搜 API started on port 9999 (PID: $BACKEND_PID)" >&2
 
 # 启动前端服务（前台运行，阻塞脚本退出）
 echo "Starting frontend on port 5000..." >&2
@@ -52,7 +52,7 @@ for i in {1..12}; do
     echo "✅ Frontend started on port 5000 (PID: $FRONTEND_PID)" >&2
     echo "🚀 All services started successfully!" >&2
     echo "   Frontend: http://localhost:5000" >&2
-    echo "   API: http://localhost:8888/api" >&2
+    echo "   API: http://localhost:9999/api" >&2
     break
   fi
   echo "Waiting... ($i/12)" >&2

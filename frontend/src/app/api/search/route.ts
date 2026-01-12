@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 // 设置更长的超时时间（60秒）
 const FETCH_TIMEOUT = 60000;
 
-// 从环境变量获取后端地址，默认使用 localhost:8888
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8888';
+// 从环境变量获取后端地址，默认使用 localhost:9999
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:9999';
 
 export async function GET(request: NextRequest) {
   try {

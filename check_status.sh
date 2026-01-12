@@ -92,27 +92,27 @@ else
     echo -e "${RED}❌ 5000 端口（前端）未监听${NC}"
 fi
 
-# 检查 8888 端口（后端）
-if ss -ltn 2>/dev/null | grep -q ':8888' || netstat -ltn 2>/dev/null | grep -q ':8888'; then
-    BACKEND_PID=$(ss -lptn 'sport = :8888' 2>/dev/null | grep -oP 'pid=\K[0-9]+' || echo "未知")
+# 检查 9999 端口（后端）
+if ss -ltn 2>/dev/null | grep -q ':9999' || netstat -ltn 2>/dev/null | grep -q ':9999'; then
+    BACKEND_PID=$(ss -lptn 'sport = :9999' 2>/dev/null | grep -oP 'pid=\K[0-9]+' || echo "未知")
     BACKEND_PROCESS=$(ps -p $BACKEND_PID -o comm= 2>/dev/null || echo "未知")
 
-    echo -e "${GREEN}✅ 8888 端口（后端）正在监听 (PID: $BACKEND_PID, 进程: $BACKEND_PROCESS)${NC}"
+    echo -e "${GREEN}✅ 9999 端口（后端）正在监听 (PID: $BACKEND_PID, 进程: $BACKEND_PROCESS)${NC}"
 
     # 警告：宝塔面板默认端口
     if [ "$BACKEND_PROCESS" != "pansou" ]; then
-        echo -e "${RED}   ⚠️  8888 端口被宝塔面板或其他进程占用！${NC}"
+        echo -e "${RED}   ⚠️  9999 端口被其他进程占用！${NC}"
         echo -e "${YELLOW}   建议：修改后端端口避免冲突${NC}"
     fi
 
     # 测试 API 响应
-    if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8888/api/health | grep -q "200\|404"; then
+    if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9999/api/health | grep -q "200\|404"; then
         echo -e "${GREEN}   后端 API 响应正常${NC}"
     else
         echo -e "${YELLOW}   ⚠️  后端 API 响应异常${NC}"
     fi
 else
-    echo -e "${RED}❌ 8888 端口（后端）未监听${NC}"
+    echo -e "${RED}❌ 9999 端口（后端）未监听${NC}"
 fi
 
 # 4. 检查防火墙
@@ -127,15 +127,15 @@ if command -v firewall-cmd &> /dev/null && systemctl is-active --quiet firewalld
     else
         echo -e "${YELLOW}   ⚠️  5000/tcp 未放行${NC}"
     fi
-    if firewall-cmd --list-ports | grep -q '8888/tcp'; then
-        echo -e "${GREEN}   8888/tcp 已放行${NC}"
+    if firewall-cmd --list-ports | grep -q '9999/tcp'; then
+        echo -e "${GREEN}   9999/tcp 已放行${NC}"
     else
-        echo -e "${YELLOW}   ⚠️  8888/tcp 未放行${NC}"
+        echo -e "${YELLOW}   ⚠️  9999/tcp 未放行${NC}"
     fi
 fi
 
 # 检查 iptables
-if command -v iptables &> /dev/null && iptables -L -n 2>/dev/null | grep -q '5000\|8888'; then
+if command -v iptables &> /dev/null && iptables -L -n 2>/dev/null | grep -q '5000\|9999'; then
     echo -e "${YELLOW}🔥 iptables 规则存在${NC}"
 fi
 
@@ -156,7 +156,7 @@ echo -e "${BLUE}   服务器公网 IP：${SERVER_IP}${NC}"
 # 测试本地访问
 echo -e "${BLUE}   测试本地访问：${NC}"
 curl -s -o /dev/null -w "   前端: http://127.0.0.1:5000 → %{http_code}\n" http://127.0.0.1:5000
-curl -s -o /dev/null -w "   后端: http://127.0.0.1:8888/api → %{http_code}\n" http://127.0.0.1:8888/api
+curl -s -o /dev/null -w "   后端: http://127.0.0.1:9999/api → %{http_code}\n" http://127.0.0.1:9999/api
 
 # 6. 诊断建议
 echo ""
@@ -178,7 +178,7 @@ if ! ss -ltn 2>/dev/null | grep -q ':5000' && ! netstat -ltn 2>/dev/null | grep 
     echo "   cd frontend && pm2 start npm --name \"${PROJECT_NAME}-frontend\" -- start"
 fi
 
-if ! ss -ltn 2>/dev/null | grep -q ':8888' && ! netstat -ltn 2>/dev/null | grep -q ':8888'; then
+if ! ss -ltn 2>/dev/null | grep -q ':9999' && ! netstat -ltn 2>/dev/null | grep -q ':9999'; then
     echo ""
     echo -e "${RED}3. 后端服务未运行${NC}"
     echo "   执行以下命令启动："
@@ -186,11 +186,11 @@ if ! ss -ltn 2>/dev/null | grep -q ':8888' && ! netstat -ltn 2>/dev/null | grep 
 fi
 
 # 宝塔面板端口冲突警告
-if ss -lptn 'sport = :8888' 2>/dev/null | grep -qv "pansou"; then
+if ss -lptn 'sport = :9999' 2>/dev/null | grep -qv "pansou"; then
     echo ""
-    echo -e "${RED}4. ⚠️  8888 端口与宝塔面板冲突${NC}"
+    echo -e "${RED}4. ⚠️  9999 端口被其他进程占用${NC}"
     echo "   建议修改后端端口："
-    echo "   1. 修改 install.sh 或 quick_start.sh 中的 PORT=8888 为其他端口（如 9999）"
+    echo "   1. 修改 install.sh 或 quick_start.sh 中的 BACKEND_PORT 变量"
     echo "   2. 重新启动后端服务"
     echo "   3. 在宝塔面板 → 安全 中放行新端口"
 fi

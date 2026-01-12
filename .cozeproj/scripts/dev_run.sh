@@ -8,7 +8,7 @@ pids=$(ss -lptn 'sport = :5000' 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2
 [ -n "$pids" ] && kill -9 $pids 2>/dev/null
 pids=$(ss -lptn 'sport = :6000' 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2)
 [ -n "$pids" ] && kill -9 $pids 2>/dev/null
-pids=$(ss -lptn 'sport = :8888' 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2)
+pids=$(ss -lptn 'sport = :9999' 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2)
 [ -n "$pids" ] && kill -9 $pids 2>/dev/null
 sleep 2
 
