@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # 默认配置
 DEFAULT_PROJECT_NAME="装歌盘搜"
 PROJECT_DIR="/www/wwwroot/pansou"
-FRONTEND_PORT=3000
+FRONTEND_PORT=5000
 BACKEND_PORT=8888
 
 # 代理配置（通过环境变量设置）
@@ -242,6 +242,7 @@ echo -e "${BLUE}⚙️  生成前端配置...${NC}"
 echo "   - 项目名称: $PROJECT_NAME"
 cat > frontend/.env.local << EOF
 NEXT_PUBLIC_APP_NAME=$PROJECT_NAME
+NEXT_PUBLIC_BACKEND_URL=http://localhost:${BACKEND_PORT}
 EOF
 echo -e "${GREEN}✅ 前端配置已生成${NC}"
 
@@ -251,12 +252,12 @@ echo -e "${BLUE}🔧 安装前端...${NC}"
 cd frontend
 
 # 确保使用国内镜像源
-pnpm config set registry https://registry.npmmirror.com
+npm config set registry https://registry.npmmirror.com
 
 echo "   - 安装依赖..."
-pnpm install
+npm install
 echo "   - 构建前端..."
-pnpm build
+npm run build
 echo -e "${GREEN}✅ 前端安装完成${NC}"
 
 # 7. 安装后端

@@ -34,7 +34,7 @@ echo "✅ 装歌盘搜 API started on port 8888"
 # 启动前端服务
 echo "Starting frontend on port 5000..."
 cd frontend
-nohup pnpm dev --port 5000 > /tmp/frontend.log 2>&1 &
+nohup npm run dev -- --port 5000 > /tmp/frontend.log 2>&1 &
 
 # 等待前端启动
 sleep 5

@@ -97,6 +97,7 @@ cd frontend
 echo "   - 项目名称: $PROJECT_NAME"
 cat > .env.local << EOF
 NEXT_PUBLIC_APP_NAME=$PROJECT_NAME
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8888
 EOF
 
 # 停止旧进程
@@ -120,7 +121,7 @@ echo -e "${GREEN}✅ 启动成功！${NC}"
 echo "=========================================="
 echo ""
 echo "📱 访问地址："
-echo "   - Web 前端: http://localhost:3000"
+echo "   - Web 前端: http://localhost:5000"
 echo "   - API 服务: http://localhost:8888/api"
 echo ""
 echo "🔧 管理命令："
