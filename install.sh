@@ -23,8 +23,8 @@ HTTP_PROXY="${HTTP_PROXY:-}"
 HTTPS_PROXY="${HTTPS_PROXY:-}"
 ALL_PROXY="${ALL_PROXY:-}"
 
-# 固定 Node.js 版本（兼容所有系统）
-NODE_VERSION_FULL="18.20.4"
+# 固定 Node.js 版本（兼容所有系统，包括 CentOS 7）
+NODE_VERSION_FULL="16.20.2"
 
 # 解析参数
 for arg in "$@"; do

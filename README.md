@@ -119,7 +119,7 @@ pm2 delete "我的网盘搜索-backend"
 
 无需预先克隆代码，直接执行以下命令即可完成全部安装。
 
-**统一使用 Node.js 18.20.4，兼容所有 Linux 系统（包括 CentOS 7）**
+**统一使用 Node.js 16.20.2，兼容所有 Linux 系统（包括 CentOS 7）**
 
 **方式 1：直接安装（推荐）**
 
@@ -769,9 +769,9 @@ go run main.go
 ## 技术栈
 
 ### 前端
-- **Node.js >= 18.18.0**（推荐 18.x）
-- Next.js 15.0.4 (App Router)
-- React 18.3.1
+- **Node.js >= 14.6.0**（推荐 16.x）
+- Next.js 13.5.6 (App Router)
+- React 18.2.0
 - Tailwind CSS 4
 - Lucide React (图标库)
 
@@ -796,10 +796,10 @@ go run main.go
 - ✅ CentOS 8+ / Rocky Linux / AlmaLinux
 - ✅ 其他主流 Linux 发行版
 
-**安装脚本统一使用 Node.js 18.20.4（官方二进制包），兼容所有系统**
+**安装脚本统一使用 Node.js 16.20.2（官方二进制包），兼容所有系统**
 
 **Next.js 版本说明：**
-- 当前使用 **Next.js 15.0.4**（支持 Node.js >= 18.18.0）
+- 当前使用 **Next.js 13.5.6**（支持 Node.js >= 14.6.0）
 - 兼容所有主流 Linux 发行版（包括 CentOS 7）
 
 ## API 接口
