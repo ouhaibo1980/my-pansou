@@ -17,13 +17,8 @@ export async function GET(request: NextRequest) {
 
     console.log(`[API Search] Searching for: ${keyword}`);
 
-    // 根据当前请求动态构建后端 URL
-    const protocol = request.headers.get('x-forwarded-proto') || request.nextUrl.protocol.replace(':', '');
-    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'localhost:5000';
-
-    // 构建后端 URL：使用相同的域名和协议，但端口改为 8888
-    const backendHost = host.replace(/:\d+$/, ':8888');
-    const backendUrl = `${protocol}://${backendHost}/api/search?kw=${encodeURIComponent(keyword)}&refresh=true`;
+    // 直接使用 localhost:8888 作为后端地址
+    const backendUrl = `http://localhost:8888/api/search?kw=${encodeURIComponent(keyword)}&refresh=true`;
 
     console.log(`[API Search] Backend URL: ${backendUrl}`);
     
