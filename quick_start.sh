@@ -86,6 +86,12 @@ echo ""
 echo -e "${BLUE}🔧 启动前端...${NC}"
 cd frontend
 
+# 生成前端配置
+echo "   - 项目名称: $PROJECT_NAME"
+cat > .env.local << EOF
+NEXT_PUBLIC_APP_NAME=$PROJECT_NAME
+EOF
+
 # 停止旧进程
 pm2 delete "${PROJECT_NAME}-frontend" 2>/dev/null || true
 

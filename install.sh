@@ -141,6 +141,15 @@ fi
 
 cd "$PROJECT_DIR"
 
+# 5.5 生成前端配置
+echo ""
+echo -e "${BLUE}⚙️  生成前端配置...${NC}"
+echo "   - 项目名称: $PROJECT_NAME"
+cat > frontend/.env.local << EOF
+NEXT_PUBLIC_APP_NAME=$PROJECT_NAME
+EOF
+echo -e "${GREEN}✅ 前端配置已生成${NC}"
+
 # 6. 安装前端
 echo ""
 echo -e "${BLUE}🔧 安装前端...${NC}"

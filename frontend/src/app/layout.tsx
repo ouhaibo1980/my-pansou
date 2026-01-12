@@ -12,9 +12,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// 读取环境变量中的项目名称
+const appName = process.env.NEXT_PUBLIC_APP_NAME || "装歌盘搜";
+
 export const metadata: Metadata = {
-  title: "装歌盘搜 - 网盘资源搜索引擎",
-  description: "高性能网盘资源搜索引擎，支持 77 个搜索源插件",
+  title: `${appName} - 网盘资源搜索引擎`,
+  description: `高性能网盘资源搜索引擎，支持 77 个搜索源插件`,
 };
 
 export default function RootLayout({

@@ -21,6 +21,9 @@ export default function Home() {
   const [error, setError] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
 
+  // 读取环境变量中的项目名称（构建时注入）
+  const appName = process.env.NEXT_PUBLIC_APP_NAME || "装歌盘搜";
+
   const getFilteredResults = () => {
     if (selectedType === 'all') {
       return results;
@@ -123,7 +126,7 @@ export default function Home() {
         <header className="text-center mb-12">
           <h1 className="text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
             <Globe className="w-12 h-12 text-purple-400" />
-            装歌盘搜
+            {appName}
           </h1>
           <p className="text-xl text-purple-200">高性能网盘资源搜索引擎</p>
         </header>

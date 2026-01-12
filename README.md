@@ -80,7 +80,7 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 
 **自定义项目名称**
 
-你可以通过参数指定自定义的项目名称，PM2 进程名称会使用自定义名称：
+你可以通过参数指定自定义的项目名称，PM2 进程名称和前端页面标题都会使用自定义名称：
 
 ```bash
 # 方式 1：使用 --name 参数
@@ -110,6 +110,8 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 # 使用 ou 参数
 ./quick_start.sh ou="云盘搜"
 ```
+
+前端页面标题和 PM2 进程名称都会使用自定义名称。
 
 **或者使用一键启动命令（无需预先克隆代码）**：
 
@@ -359,6 +361,8 @@ A: 在执行安装或启动脚本时，添加 `--name` 或 `ou` 参数：
 pm2 logs "我的网盘搜索-frontend"
 pm2 restart "云盘搜-backend"
 ```
+
+**注意**：自定义名称会同时影响 PM2 进程名称和前端页面标题显示。
 
 #### Q: 无法访问 GitHub 怎么办？
 
