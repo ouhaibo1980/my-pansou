@@ -2,6 +2,58 @@
 
 高性能网盘资源搜索引擎，提供美观的 Web 前端界面，支持 77 个搜索源插件。
 
+## 快速安装（推荐）
+
+### 一键安装脚本
+
+适用于全新服务器环境，自动检测并安装所有依赖。
+
+```bash
+# 下载并运行安装脚本（需要 root 权限）
+sudo ./install.sh
+```
+
+脚本会自动完成以下操作：
+- 检测并安装 Node.js、PM2、Go、pnpm
+- 克隆项目代码
+- 编译后端
+- 构建前端
+- 启动服务
+- 配置开机自启
+
+### 快速启动脚本
+
+适用于已下载项目代码的情况，快速启动服务。
+
+```bash
+# 快速启动服务
+./quick_start.sh
+```
+
+### 手动快速安装
+
+如果你已经熟悉 Linux，可以使用以下命令快速安装：
+
+```bash
+# 1. 克隆代码
+git clone git@github.com:ouhaibo1980/my-pansou.git pansou
+cd pansou
+
+# 2. 安装前端依赖并构建
+cd frontend
+pnpm install
+pnpm build
+pm2 start npm --name "pansou-frontend" -- start
+
+# 3. 编译并启动后端
+cd ..
+go build -o pansou main.go
+pm2 start ./pansou --name "pansou-backend"
+
+# 4. 设置开机自启
+pm2 save
+```
+
 ## 宝塔面板部署教程
 
 ### 前置准备
@@ -309,7 +361,9 @@ GET http://localhost:8888/api/health
 ├── service/                # 业务逻辑
 ├── typescript/             # MCP 服务
 ├── main.go                # Go 后端入口
-└── cache/                 # 缓存目录
+├── cache/                 # 缓存目录
+├── install.sh             # 一键安装脚本
+└── quick_start.sh         # 快速启动脚本
 ```
 
 ## 支持的网盘类型
