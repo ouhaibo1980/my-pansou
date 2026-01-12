@@ -1,5 +1,35 @@
 # 更新日志
 
+## [1.1.3] - 2024-01-12
+
+### 新增功能
+
+#### 🗑️ 一键卸载脚本
+- 新增 `uninstall.sh` 脚本，支持一键删除服务
+- 支持停止并删除 PM2 进程（前端/后端）
+- 支持删除项目目录
+- 支持删除 PM2 配置（可选）
+- 支持卸载依赖软件（可选）
+- 支持卸载自定义名称实例
+- 提供确认机制，避免误删
+
+**使用示例：**
+```bash
+# 快速卸载
+./uninstall.sh
+
+# 卸载自定义名称实例
+./uninstall.sh --name="我的网盘搜索"
+./uninstall.sh ou="云盘搜"
+
+# 使用 GitHub 代理下载卸载脚本
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/uninstall.sh -o uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh
+```
+
+### 文档更新
+
+- 更新 `README.md` - 添加"快速卸载脚本"章节
+
 ## [1.1.2] - 2024-01-12
 
 ### Bug 修复

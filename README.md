@@ -263,6 +263,41 @@ curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-
 **注意**：这个命令需要在已克隆的项目目录中运行。
 
 
+### 快速卸载脚本
+
+适用于需要卸载服务的情况，一键删除项目文件和配置。
+
+```bash
+# 快速卸载服务
+./uninstall.sh
+```
+
+**卸载内容**：
+- 停止并删除 PM2 进程（${PROJECT_NAME}-frontend, ${PROJECT_NAME}-backend）
+- 删除项目目录（/www/wwwroot/pansou）
+- 可选：删除 PM2 配置
+- 可选：卸载依赖软件（Node.js/Go/pnpm）
+
+**使用 GitHub 代理下载卸载脚本**：
+
+```bash
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/uninstall.sh -o uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh
+```
+
+**卸载自定义名称实例**：
+
+```bash
+# 卸载自定义名称实例
+./uninstall.sh --name="我的网盘搜索"
+
+# 使用 ou 参数
+./uninstall.sh ou="云盘搜"
+```
+
+**卸载确认**：
+
+脚本会提示确认卸载操作，需要输入 `yes` 或 `y` 才能继续。
+
 ### 手动快速安装
 
 如果你已经熟悉 Linux，可以使用以下命令快速安装：
