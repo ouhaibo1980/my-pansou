@@ -203,19 +203,3 @@ cd my-pansou
 # 查看运行状态
 ./watch_and_sync.sh status
 ```
-
-**特点：**
-- 完全自动化，无需手动操作
-- 每 10 秒检测一次变动
-- 日志记录同步历史：`/tmp/pansou_sync.log`
-
-### GitHub 仓库
-
-- **仓库地址**: https://github.com/ouhaibo1980/my-pansou
-- **SSH URL**: git@github.com:ouhaibo1980/my-pansou.git
-
-**注意**：首次使用需要配置 SSH 密钥并添加到 GitHub 账户。
-
-## 原项目地址
-
-- [PanSou](https://github.com/ouhaibo1980/pansou) - 网盘搜索 API
