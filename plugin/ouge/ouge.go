@@ -253,7 +253,7 @@ func (p *OugeAsyncPlugin) parseAPIItem(item OugeAPIItem) model.SearchResult {
 		Tags:     tags,
 		Images:   images,
 		Channel:  "", // 插件搜索结果Channel为空
-		Datetime: time.Time{}, // 使用零值而不是nil，参考jikepan插件标准
+		Datetime: time.Now(), // 设置为当前时间（今天），确保ouge插件结果排在最前面
 	}
 }
 
