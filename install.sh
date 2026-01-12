@@ -299,6 +299,8 @@ echo -e "${BLUE}⚙️  生成前端配置...${NC}"
 echo "   - 项目名称: $PROJECT_NAME"
 cat > frontend/.env.local << EOF
 NEXT_PUBLIC_APP_NAME=$PROJECT_NAME
+PORT=5000
+NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:9999
 EOF
 echo -e "${GREEN}✅ 前端配置已生成${NC}"
 
@@ -337,19 +339,25 @@ echo -e "${GREEN}✅ 后端安装完成${NC}"
 echo ""
 echo -e "${BLUE}🚀 启动服务...${NC}"
 
+# 后端端口配置（避免与宝塔面板默认端口 8888 冲突）
+BACKEND_PORT=9999
+
 # 停止旧进程（如果存在）
+echo "   - 停止旧进程..."
+pm2 stop "${PROJECT_NAME}-frontend" 2>/dev/null || true
 pm2 delete "${PROJECT_NAME}-frontend" 2>/dev/null || true
+pm2 stop "${PROJECT_NAME}-backend" 2>/dev/null || true
 pm2 delete "${PROJECT_NAME}-backend" 2>/dev/null || true
 
 # 启动前端
-echo "   - 启动前端..."
+echo "   - 启动前端（端口 5000）..."
 cd frontend
 pm2 start npm --name "${PROJECT_NAME}-frontend" -- start
 
 # 启动后端（启用所有搜索插件）
-echo "   - 启动后端..."
+echo "   - 启动后端（端口 $BACKEND_PORT）..."
 cd ..
-ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj" ENV=production PORT=8888 pm2 start ./pansou --name "${PROJECT_NAME}-backend}"
+ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj" ENV=production PORT=$BACKEND_PORT pm2 start ./pansou --name "${PROJECT_NAME}-backend}"
 
 # 设置开机自启
 pm2 save
@@ -391,7 +399,7 @@ if [ "$BT_INSTALLED" = true ]; then
     echo ""
     echo "       # 后端 API 代理"
     echo "       location /api {"
-    echo "           proxy_pass http://127.0.0.1:8888;"
+    echo "           proxy_pass http://127.0.0.1:9999;"
     echo "           proxy_set_header Host \$host;"
     echo "           proxy_set_header X-Real-IP \$remote_addr;"
     echo "           proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;"

@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+  // 明确指定运行端口
+  env: {
+    PORT: '5000',
+  },
 };
 
 export default nextConfig;

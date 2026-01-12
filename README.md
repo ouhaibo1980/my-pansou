@@ -515,9 +515,9 @@ server {
         proxy_set_header Connection "upgrade";
     }
 
-    # 后端 API 代理（Go 后端运行在 8888 端口）
+    # 后端 API 代理（Go 后端运行在 9999 端口）
     location /api {
-        proxy_pass http://127.0.0.1:8888;
+        proxy_pass http://127.0.0.1:9999;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -528,7 +528,7 @@ server {
 
 **配置说明**：
 - **前端**：运行在 `127.0.0.1:5000`，提供 Web 界面
-- **后端 API**：运行在 `127.0.0.1:8888`，提供搜索 API
+- **后端 API**：运行在 `127.0.0.1:9999`，提供搜索 API
 - **端口映射**：Nginx 监听 80 端口，分别转发到前后端
 
 点击 **保存**，Nginx 会自动重载配置。
@@ -582,7 +582,7 @@ A: 请检查以下几点：
 
    # 后端 API 代理
    location /api {
-       proxy_pass http://127.0.0.1:8888;
+       proxy_pass http://127.0.0.1:9999;
        proxy_set_header Host $host;
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -600,9 +600,9 @@ A: 请检查以下几点：
    pm2 logs 装歌盘搜-frontend
    ```
 
-4. **后端服务状态**：确保后端服务正常监听 8888 端口
+4. **后端服务状态**：确保后端服务正常监听 9999 端口
    ```bash
-   curl http://localhost:8888/api/search?kw=test
+   curl http://localhost:9999/api/search?kw=test
    ```
 
 #### Q: PM2 命令找不到？
@@ -613,7 +613,7 @@ A: 确保 PM2 管理器已正确安装，或在宝塔面板的 **软件商店** 
 
 A: 可以修改 `.cozeproj/scripts/dev_run.sh` 或 `install.sh` 中的端口配置，同时记得更新 Nginx 配置中的 `proxy_pass` 端口。
 
-#### Q: 后端端口 8888 被占用？
+#### Q: 后端端口 9999 被占用？
 
 A: 可以在 `install.sh` 中修改 `BACKEND_PORT` 环境变量，或者启动时使用 `PORT` 环境变量指定：
 ```bash
@@ -940,7 +940,7 @@ go mod download
 go run main.go
 ```
 
-后端 API 将运行在 http://localhost:8888
+后端 API 将运行在 http://localhost:9999
 
 ## 功能特性
 
@@ -957,7 +957,7 @@ go run main.go
 
 - **宝塔部署**: http://你的域名
 - **本地开发前端**: http://localhost:5000
-- **本地开发 API**: http://localhost:8888/api
+- **本地开发 API**: http://localhost:9999/api
 
 ## 技术栈
 
@@ -999,8 +999,8 @@ go run main.go
 
 ### 搜索接口
 ```
-GET http://localhost:8888/api/search?keyword=搜索关键词
-POST http://localhost:8888/api/search
+GET http://localhost:9999/api/search?keyword=搜索关键词
+POST http://localhost:9999/api/search
 Content-Type: application/json
 
 {
@@ -1010,7 +1010,7 @@ Content-Type: application/json
 
 ### 健康检查
 ```
-GET http://localhost:8888/api/health
+GET http://localhost:9999/api/health
 ```
 
 ## 项目结构

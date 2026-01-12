@@ -93,11 +93,24 @@ if [ ! -f "./pansou" ]; then
     go build -o pansou main.go
 fi
 
-# 停止旧进程
+# 停止并删除旧进程（如果存在）
+echo "   - 停止旧的后端进程..."
+pm2 stop "${PROJECT_NAME}-backend" 2>/dev/null || true
 pm2 delete "${PROJECT_NAME}-backend" 2>/dev/null || true
-# 启动后端
+
 # 启动后端（启用所有搜索插件）
-ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj" ENV=production PORT=8888 pm2 start ./pansou --name "${PROJECT_NAME}-backend}"
+echo "   - 启动后端..."
+BACKEND_PORT="${BACKEND_PORT:-9999}"
+echo "   - 后端端口: $BACKEND_PORT"
+
+# 生成前端环境变量（包含后端地址）
+echo "   - 配置前端后端地址..."
+cat > frontend/.env.local << EOF
+NEXT_PUBLIC_APP_NAME=$PROJECT_NAME
+NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:$BACKEND_PORT
+PORT=5000
+EOF
+ENABLED_PLUGINS="ahhhhfs,aikanzy,alupan,ash,bixin,cldi,clmao,clxiong,cyg,daishudj,ddys,discourse,djgou,duoduo,dyyj,erxiao,feikuai,fox4k,gying,haisou,hdmoli,hdr4k,huban,hunhepan,javdb,jikepan,jsnoteclub,jutoushe,kkmao,kkv,labi,leijing,libvio,lou1,meitizy,miaoso,mikuclub,mizixing,muou,nsgame,nyaa,ouge,pan666,pansearch,panta,panwiki,panyq,pianku,qingying,qqpd,quark4k,quarksoo,qupanshe,qupansou,sdso,shandian,sousou,susu,thepiratebay,u3c3,wanou,weibo,wuji,xb6v,xdpan,xdyh,xiaoji,xiaozhang,xinjuc,xuexizhinan,xys,yiove,ypfxw,yuhuage,yunsou,zhizhen,zxzj" ENV=production PORT=$BACKEND_PORT pm2 start ./pansou --name "${PROJECT_NAME}-backend}"
 echo -e "${GREEN}✅ 后端已启动${NC}"
 
 # 3. 启动前端
@@ -105,16 +118,13 @@ echo ""
 echo -e "${BLUE}🔧 启动前端...${NC}"
 cd frontend
 
-# 生成前端配置
-echo "   - 项目名称: $PROJECT_NAME"
-cat > .env.local << EOF
-NEXT_PUBLIC_APP_NAME=$PROJECT_NAME
-EOF
-
-# 停止旧进程
+# 停止并删除旧进程（如果存在）
+echo "   - 停止旧的前端进程..."
+pm2 stop "${PROJECT_NAME}-frontend" 2>/dev/null || true
 pm2 delete "${PROJECT_NAME}-frontend" 2>/dev/null || true
 
 # 启动前端
+echo "   - 启动前端..."
 pm2 start npm --name "${PROJECT_NAME}-frontend" -- start
 cd "$SCRIPT_DIR"
 echo -e "${GREEN}✅ 前端已启动${NC}"
