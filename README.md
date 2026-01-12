@@ -26,13 +26,17 @@
 
 #### 一键安装时指定名称
 
+**方式 1：使用 --name 参数**
+
 ```bash
-# 方式 1：使用 --name 参数
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && \
 sudo chmod +x install.sh && \
 sudo ./install.sh --name="我的网盘搜索"
+```
 
-# 方式 2：使用 ou 参数（更简洁）
+**方式 2：使用 ou 参数（更简洁）**
+
+```bash
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh -o install.sh && \
 sudo chmod +x install.sh && \
 sudo ./install.sh ou="云盘搜"
@@ -42,11 +46,15 @@ sudo ./install.sh ou="云盘搜"
 
 如果你已经下载了项目代码，可以使用快速启动脚本：
 
-```bash
-# 使用 --name 参数
-./quick_start.sh --name="搜盘大师"
+**使用 --name 参数**
 
-# 使用 ou 参数
+```bash
+./quick_start.sh --name="搜盘大师"
+```
+
+**使用 ou 参数**
+
+```bash
 ./quick_start.sh ou="极速云搜"
 ```
 
@@ -195,11 +203,15 @@ curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.
 
 你可以通过参数指定自定义的项目名称，PM2 进程名称和前端页面标题都会使用自定义名称：
 
-```bash
-# 方式 1：使用 --name 参数
-./install.sh --name="我的网盘搜索"
+**方式 1：使用 --name 参数**
 
-# 方式 2：使用 ou 参数
+```bash
+./install.sh --name="我的网盘搜索"
+```
+
+**方式 2：使用 ou 参数**
+
+```bash
 ./install.sh ou="云盘搜"
 ```
 
