@@ -88,4 +88,3 @@ docker run -d --name pansou \
 
 - 完整文档：[README.md](README.md)
 - Docker 详细指南：[DOCKER_GUIDE.md](DOCKER_GUIDE.md)
-- GitHub 仓库：https://github.com/ouhaibo1980/my-pansou
