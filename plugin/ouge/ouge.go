@@ -82,7 +82,7 @@ func createOptimizedHTTPClient() *http.Client {
 // NewOugePlugin 创建新的Ouge异步插件
 func NewOugePlugin() *OugeAsyncPlugin {
 	return &OugeAsyncPlugin{
-		BaseAsyncPlugin: plugin.NewBaseAsyncPlugin("ouge", 2),
+		BaseAsyncPlugin: plugin.NewBaseAsyncPlugin("ouge", 1),
 		optimizedClient: createOptimizedHTTPClient(),
 	}
 }
