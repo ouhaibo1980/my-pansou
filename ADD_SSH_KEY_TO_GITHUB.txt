@@ -1,0 +1,23 @@
+=====================================
+SSH 公钥 - 需要添加到 GitHub
+=====================================
+
+请访问以下链接添加 SSH Key：
+https://github.com/settings/keys
+
+点击 "New SSH key"，然后粘贴以下内容：
+
+----- 复制下面的公钥 -----
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM3Kjs2AfSTlxKevw0CpC1ODA1W/rnjgG2I8xRvMWwEO pansou@ouge
+----- 公钥内容结束 -----
+
+配置说明：
+- Title: pansou-server
+- Key type: Authentication Key
+
+添加完成后，运行以下命令推送代码：
+
+    cd /workspace/projects
+    git push -u origin main
+
+=====================================
