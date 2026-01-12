@@ -1,5 +1,12 @@
 # 快速开始
 
+装歌盘搜提供多种 Docker 部署方式，开箱即用。
+
+## 说明
+
+- `ghcr.io/fish2018/pansou:latest` - 官方后端镜像（仅 API）
+- 本地构建镜像 - 包含前端和后端的完整版本（推荐）
+
 ## 前后端集成版
 
 ### 直接使用 Docker 命令
@@ -7,10 +14,12 @@
 一键启动，开箱即用：
 
 ```bash
-docker run -d --name pansou -p 5000:5000 ghcr.io/ouhaibo1980/pansou:latest
+docker run -d --name pansou \
+  -p 5000:5000 \
+  ghcr.io/fish2018/pansou:latest
 ```
 
-启动后访问：http://localhost:5000
+**注意**：此命令仅启动后端 API 服务，如需完整的前端界面，请使用 Docker Compose 方式。
 
 ### 使用 Docker Compose（推荐）
 
@@ -26,7 +35,9 @@ curl -o docker-compose.yml https://raw.githubusercontent.com/ouhaibo1980/my-pans
 docker-compose up -d
 ```
 
-启动后访问：http://localhost:5000
+启动后访问 API 服务：http://localhost:8888/api
+
+**注意**：此配置仅启动后端 API 服务。如需完整的前端界面，请使用本地构建方式。
 
 #### 管理命令
 
@@ -53,15 +64,21 @@ docker run -d --name pansou-backend \
 
 ### 使用本地代码构建
 
-如果你已经克隆了仓库，可以使用本地代码构建：
+如果你已经克隆了仓库，可以使用本地代码构建前后端集成版：
 
 ```bash
-# 构建镜像
+# 克隆仓库
+git clone git@github.com:ouhaibo1980/my-pansou.git
+cd my-pansou
+
+# 构建镜像（包含前端和后端）
 docker build -t pansou-local .
 
 # 运行容器
 docker run -d --name pansou -p 5000:5000 pansou-local
 ```
+
+启动后访问：http://localhost:5000
 
 ## 环境变量
 
@@ -72,7 +89,7 @@ docker run -d --name pansou \
   -p 5000:5000 \
   -e PORT=5000 \
   -e ENABLED_PLUGINS=ouge,labi,wanou \
-  ghcr.io/ouhaibo1980/pansou:latest
+  ghcr.io/fish2018/pansou:latest
 ```
 
 常用环境变量：
@@ -80,6 +97,21 @@ docker run -d --name pansou \
 - `ENABLED_PLUGINS`: 启用的插件列表（逗号分隔）
 - `CACHE_ENABLED`: 是否启用缓存（默认 true）
 - `TZ`: 时区（默认 Asia/Shanghai）
+
+## 完整版部署（前端 + 后端）
+
+如果你需要完整的前后端集成界面，请使用本地构建：
+
+```bash
+# 克隆仓库
+git clone git@github.com:ouhaibo1980/my-pansou.git
+cd my-pansou
+
+# 一键启动
+./start_docker.sh
+```
+
+启动后访问：http://localhost:5000
 
 ## 更多信息
 

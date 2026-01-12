@@ -11,10 +11,12 @@
 一键启动，开箱即用：
 
 ```bash
-docker run -d --name pansou -p 5000:5000 ghcr.io/ouhaibo1980/pansou:latest
+docker run -d --name pansou \
+  -p 5000:5000 \
+  ghcr.io/fish2018/pansou:latest
 ```
 
-启动后访问：http://localhost:5000
+**注意**：此命令仅启动后端 API 服务，如需完整的前端界面，请使用 Docker Compose 方式。
 
 #### 使用 Docker Compose（推荐）
 
