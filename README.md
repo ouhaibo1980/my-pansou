@@ -70,23 +70,6 @@ GET http://localhost:8888/api/health
 - `GOPROXY`: Go 模块代理
 - `ENABLED_PLUGINS`: 启用的插件列表（77 个插件）
 
-## 已启用的搜索源（77个）
-
-### 电影/视频类 (优先级 1-2)
-- ddys, erxiao, hdr4k, jutoushe, labi, libvio, lou1, panta, susu, wanou
-- ahhhhfs, alupan, ash, clxiong, discourse, djgou, duoduo, dyyj, hdmoli
-- huban, jsnoteclub, kkmao, leijing, meitizy, mikuclub, muou, nsgame
-- ouge, panyq, shandian, xinjuc, ypfxw, yunsou
-
-### 综合搜索类 (优先级 3)
-- aikanzy, bixin, cldi, clmao, cyg, daishudj, feikuai, fox4k, gying, haisou
-- hunhepan, jikepan, kkv, miaoso, mizixing, nyaa, pan666, pansearch, panwiki
-- pianku, qingying, qqpd, quark4k, quarksoo, qupanshe, qupansou, sdso
-- sousou, thepiratebay, weibo, wuji, xb6v, xdpan, xdyh, xiaoji, xiaozhang
-- xys, yiove, yuhuage, zxzj
-
-### 成人内容类 (优先级 5)
-- javdb, u3c3
 
 ## 支持的网盘类型
 
@@ -117,35 +100,6 @@ GET http://localhost:8888/api/health
 }
 ```
 
-## 推送到 GitHub
 
-项目提供了便捷的推送脚本，用于将代码推送到 GitHub 仓库供他人部署。
-
-```bash
-# 给脚本添加执行权限（首次运行）
-chmod +x push_to_github.sh
-
-# 运行推送脚本
-./push_to_github.sh
 ```
 
-脚本会自动：
-- 配置远程仓库地址（`git@github.com:ouhaibo1980/my-pansou.git`）
-- 检测并提交未提交的更改
-- 推送代码到 GitHub
-
-**注意**：使用此脚本需要配置 SSH 密钥并添加到 GitHub 账户。
-
-## 启动服务
-
-```bash
-# 开发环境
-bash .cozeproj/scripts/dev_run.sh
-
-# 生产环境
-bash .cozeproj/scripts/deploy_run.sh
-```
-
-## 原项目地址
-
-- [PanSou](https://github.com/ouhaibo1980/pansou) - 网盘搜索 API

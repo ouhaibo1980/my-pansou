@@ -47,24 +47,3 @@ Content-Type: application/json
 GET http://localhost:8888/api/health
 ```
 
-## 项目结构
-
-```
-.
-├── frontend/          # Next.js 前端项目
-│   ├── src/
-│   │   └── app/
-│   │       └── page.tsx    # 主页面
-│   └── package.json
-├── pansou            # Go 后端二进制文件
-└── cache/            # 缓存目录
-```
-
-## 环境变量
-
-- `PORT`: 后端 API 端口（默认 8888）
-- `GOPROXY`: Go 模块代理
-
-## 原项目地址
-
-- [PanSou](https://github.com/ouhaibo1980/pansou) - 网盘搜索 API
