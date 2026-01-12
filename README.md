@@ -74,18 +74,20 @@ cd /www/wwwroot/pansou
 # 下载 Go 依赖
 go mod download
 
-# 使用 PM2 启动后端
-pm2 start go run --name "pansou-backend" -- main.go
-```
-
-或者先编译成二进制文件再运行：
-
-```bash
-# 编译后端
+# 编译后端（推荐方式，启动更快）
 go build -o pansou main.go
 
-# 使用 PM2 启动
+# 使用 PM2 启动后端
 pm2 start ./pansou --name "pansou-backend"
+```
+
+**说明**：编译成二进制文件后再运行，启动速度更快，更稳定。如果需要修改代码后重启，只需重新编译并执行 `pm2 restart pansou-backend`。
+
+或者使用直接运行的方式（不推荐，每次启动都重新编译）：
+
+```bash
+# 直接使用 go run 运行（启动较慢）
+pm2 start go run --name "pansou-backend" -- main.go
 ```
 
 #### 5. 配置 Nginx 反向代理
