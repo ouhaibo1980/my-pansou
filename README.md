@@ -14,9 +14,45 @@
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
 ```
 
-**方式 2：带代理安装（无法访问 GitHub 时使用）**
+**方式 2：使用 GitHub 代理（无法直接访问 GitHub 时使用）**
 
-如果你的网络无法访问 GitHub，可以使用代理：
+如果你的网络无法直接访问 GitHub，可以使用 GitHub 代理加速访问。
+
+**推荐的 GitHub 代理：**
+
+```bash
+# 代理 1：https://gh.ddlc.top（推荐，延迟低）
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+
+# 代理 2：http://gh.927223.xyz（速度快）
+curl -fsSL http://gh.927223.xyz/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+
+# 代理 3：https://gh.felicity.ac.cn（稳定）
+curl -fsSL https://gh.felicity.ac.cn/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+
+# 代理 4：https://gh-proxy.com（常用）
+curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+```
+
+**获取更多代理：**
+
+可以从以下 API 获取最新的 GitHub 代理列表，并选择延迟最低的：
+
+```bash
+curl -s http://api.suxun.site/api/github
+```
+
+返回的 JSON 数据中包含 `url`、`latency`（延迟）、`location`（位置）等信息，选择 `latency` 最小的代理使用。
+
+**使用方式：**
+
+将 `https://raw.githubusercontent.com/...` 替换为 `代理地址/https://raw.githubusercontent.com/...`
+
+例如：
+- 原始：`https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh`
+- 使用代理：`https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh`
+
+**方式 3：使用 HTTP/SOCKS 代理（如果你有自己的代理服务器）**
 
 ```bash
 # 使用 HTTP/HTTPS 代理
@@ -26,7 +62,7 @@ curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo198
 curl -fsSL --socks5 127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
 ```
 
-**方式 3：使用环境变量配置代理**
+**方式 4：使用环境变量配置代理**
 
 ```bash
 # 设置代理环境变量
@@ -37,7 +73,9 @@ export HTTPS_PROXY=http://127.0.0.1:7890
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
 ```
 
-**注意**：将 `127.0.0.1:7890` 替换为你的代理地址和端口。
+**注意**：
+- 使用方式 3 或 4 时，将 `127.0.0.1:7890` 替换为你的代理地址和端口
+- 使用方式 2 的 GitHub 代理时，无需配置本地代理，直接使用即可
 
 **方式 3：先下载再执行（更安全）**
 
@@ -84,7 +122,14 @@ curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo198
 curl -fsSL https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
 ```
 
-**带代理的一键启动**：
+**使用 GitHub 代理启动（无法直接访问 GitHub）**：
+
+```bash
+# 使用 GitHub 代理
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
+```
+
+**使用 HTTP/SOCKS 代理**：
 
 ```bash
 curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/quick_start.sh -o quick_start.sh && chmod +x quick_start.sh && ./quick_start.sh
@@ -304,7 +349,30 @@ pm2 flush
 
 A: 如果无法访问 GitHub，可以使用以下方法：
 
-**方法 1：使用代理执行安装命令**
+**方法 1：使用 GitHub 代理（推荐，无需本地代理）**
+
+使用公共 GitHub 代理，无需配置本地代理服务器：
+
+```bash
+# 推荐代理列表（延迟从低到高）
+# 1. https://gh.ddlc.top
+# 2. http://gh.927223.xyz
+# 3. https://gh.felicity.ac.cn
+
+# 使用示例
+curl -fsSL https://gh.ddlc.top/https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
+```
+
+**获取更多代理：**
+
+```bash
+# 获取最新代理列表
+curl -s http://api.suxun.site/api/github
+```
+
+返回的数据包含多个代理，选择 `latency` 最小的使用。
+
+**方法 2：使用本地代理执行安装命令**
 ```bash
 # HTTP/HTTPS 代理
 curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
@@ -313,7 +381,7 @@ curl -fsSL -x http://127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo198
 curl -fsSL --socks5 127.0.0.1:7890 https://raw.githubusercontent.com/ouhaibo1980/my-pansou/main/install.sh | sudo bash
 ```
 
-**方法 2：配置 Git 代理**
+**方法 3：配置 Git 代理**
 ```bash
 # 配置 HTTP 代理
 git config --global http.proxy http://127.0.0.1:7890
@@ -324,7 +392,7 @@ git config --global --unset http.proxy
 git config --global --unset https.proxy
 ```
 
-**方法 3：配置 Go 代理（下载依赖时）**
+**方法 4：配置 Go 代理（下载依赖时）**
 ```bash
 # 设置 Go 模块代理（国内用户推荐）
 export GOPROXY=https://goproxy.cn,direct
@@ -334,7 +402,7 @@ echo 'export GOPROXY=https://goproxy.cn,direct' >> /etc/profile
 source /etc/profile
 ```
 
-**方法 4：从国内镜像源下载**
+**方法 5：从国内镜像源下载**
 如果有条件，可以先将代码下载到本地，然后上传到服务器。
 
 #### Q: 如何重启服务？
