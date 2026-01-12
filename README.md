@@ -307,10 +307,7 @@ GET http://localhost:8888/api/health
 ├── service/                # 业务逻辑
 ├── typescript/             # MCP 服务
 ├── main.go                # Go 后端入口
-├── cache/                 # 缓存目录
-├── push_to_github.sh      # GitHub 手动推送脚本
-├── auto_sync_to_github.sh # GitHub 自动同步脚本
-└── watch_and_sync.sh      # 文件监控同步脚本
+└── cache/                 # 缓存目录
 ```
 
 ## 支持的网盘类型
@@ -341,42 +338,3 @@ GET http://localhost:8888/api/health
   }
 }
 ```
-
-## GitHub 同步
-
-项目提供了三个便捷的 GitHub 同步脚本：
-
-### 1. 手动推送脚本
-
-```bash
-# 推送当前变更到 GitHub
-./push_to_github.sh "your commit message"
-```
-
-### 2. 自动同步脚本
-
-```bash
-# 自动拉取最新代码并推送（使用默认提交信息）
-./auto_sync_to_github.sh
-
-# 或指定提交信息
-./auto_sync_to_github.sh "your commit message"
-```
-
-### 3. 文件监控脚本（需要安装 inotify-tools）
-
-```bash
-# 实时监控文件变更，自动同步到 GitHub
-./watch_and_sync.sh
-```
-
-监控模式下，脚本会自动检测文件变更并推送到 GitHub，无需手动操作。
-
-**注意**：文件监控脚本需要安装 `inotify-tools`：
-- Ubuntu/Debian: `sudo apt-get install inotify-tools`
-- CentOS/RHEL: `sudo yum install inotify-tools`
-- macOS: `brew install fswatch`
-
-## 许可证
-
-MIT
